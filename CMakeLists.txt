@@ -11,6 +11,11 @@ add_subdirectory(dependencies/libpcap-1.10.7 EXCLUDE_FROM_ALL)
 add_library(netstack STATIC
     src/device.cpp
     src/packetio.cpp
+    src/ip.cpp
+    src/routing.cpp
+    src/arp.cpp
+    src/link_state.cpp
+    src/netstack.cpp
 )
 target_include_directories(netstack PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 target_link_libraries(netstack PUBLIC pcap)
