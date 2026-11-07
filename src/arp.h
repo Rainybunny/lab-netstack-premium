@@ -62,6 +62,13 @@ ArpResult arpSendWithResolution(int deviceId, in_addr nextHopIp,
                                 const void* packet, int len);
 
 /**
+ * Look up a valid cached MAC address for a next hop.
+ *
+ * @return true and fills @p mac when a fresh mapping exists.
+ */
+bool arpLookup(int deviceId, in_addr nextHopIp, macaddr_t& mac);
+
+/**
  * Drive ARP timers: retry unresolved requests and expire stale cache entries.
  * Called from the single-threaded receive-loop tick.
  */

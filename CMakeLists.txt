@@ -15,6 +15,7 @@ add_library(netstack STATIC
     src/routing.cpp
     src/arp.cpp
     src/link_state.cpp
+    src/egress.cpp
     src/tcp.cpp
     src/socket.cpp
     src/netstack.cpp
@@ -64,3 +65,8 @@ foreach(checkpoint echo_client echo_server perf_client perf_server)
     target_link_libraries(${checkpoint} PRIVATE netstack)
     target_link_options(${checkpoint} PRIVATE ${NETSTACK_WRAP_OPTIONS})
 endforeach()
+
+add_executable(tcp_tool src/evaluate/tcp_tool.cpp)
+target_link_libraries(tcp_tool PRIVATE netstack)
+target_link_options(tcp_tool PRIVATE ${NETSTACK_WRAP_OPTIONS})
+target_compile_options(tcp_tool PRIVATE -Wall -Wextra -Wpedantic)

@@ -1,10 +1,49 @@
 #include "packetio.h"
 
+#include <cstdlib>
 #include <cstring>
 
 namespace {
 
 FrameReceiveCallback receiveCallback = nullptr;
+
+// Loss emulation for evaluating TCP retransmission. NETSTACK_LOSS is a
+// percentage; only IPv4 TCP frames are dropped, so ARP and the control plane
+// still work. NETSTACK_LOSS_SEED makes a run reproducible.
+int lossPercent = -1;
+uint32_t lossState = 1;
+
+void configureLoss() {
+    if (lossPercent >= 0) {
+        return;
+    }
+    lossPercent = 0;
+    const char* percent = std::getenv("NETSTACK_LOSS");
+    if (percent != nullptr) {
+        lossPercent = std::clamp(std::atoi(percent), 0, 100);
+    }
+    const char* seed = std::getenv("NETSTACK_LOSS_SEED");
+    if (seed != nullptr) {
+        lossState = uint32_t(std::strtoul(seed, nullptr, 10));
+    }
+    if (lossState == 0) {
+        lossState = 1;
+    }
+}
+
+bool shouldDrop(const void* buf, int len, int ethType) {
+    configureLoss();
+    if (lossPercent == 0 || ethType != ETH_TYPE_IPV4 ||
+        len < int(IP_HEADER_LEN)) {
+        return false;
+    }
+    const auto* packet = static_cast<const uint8_t*>(buf);
+    if (packet[9] != IPPROTO_TCP) {
+        return false;
+    }
+    lossState = lossState * 1664525u + 1013904223u;
+    return int((lossState >> 16) % 100u) < lossPercent;
+}
 
 } // namespace
 
@@ -14,6 +53,9 @@ int sendFrame(const void* buf, int len,
         destMac == nullptr || (buf == nullptr && len != 0) ||
         ethType < 0x0600 || ethType > 0xffff) {
         return -1;
+    }
+    if (shouldDrop(buf, len, ethType)) {
+        return 0;
     }
 
     auto src = getMac(id);

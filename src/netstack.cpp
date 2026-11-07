@@ -3,6 +3,7 @@
 #include "ip.h"
 #include "arp.h"
 #include "device.h"
+#include "egress.h"
 #include "link_state.h"
 #include "packetio.h"
 #include "routing.h"
@@ -35,6 +36,7 @@ void netstackTick() {
     auto now = std::chrono::steady_clock().now();
     arpTick(now);
     linkStateTick(now);
+    egressTick(now);
     tcpTick(now);
     if (appTick != nullptr) {
         appTick();
@@ -67,6 +69,10 @@ int netstackInit() {
         WARN("netstackInit: no usable Ethernet device\n");
         return -1;
     }
+
+    // The optional egress shaper is configured by device name, so it must
+    // run after the interfaces have been added.
+    egressInit();
 
     // Link-state initialization needs the device and address snapshot.
     if (linkStateInit() < 0) {

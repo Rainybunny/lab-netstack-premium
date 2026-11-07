@@ -1437,6 +1437,11 @@ void tcpRelease(int conn) {
     connections.erase(conn);
 }
 
+size_t tcpPendingBytes(int conn) {
+    TcpConn* state = getConn(conn);
+    return state == nullptr ? 0 : state->sendBuf.size();
+}
+
 int tcpError(int conn) {
     TcpConn* state = getConn(conn);
     return state == nullptr ? EBADF : state->error;
@@ -1476,6 +1481,7 @@ bool tcpGetCongestionInfo(int conn, TcpCongestionInfo& info) {
     info.cwnd = state->cwnd;
     info.ssthresh = state->ssthresh;
     info.bytesInFlight = state->sndNxt - state->sndUna;
+    info.bytesQueued = state->sendBuf.size();
     info.srttMs = state->srttMs;
     info.rtoMs = state->rtoMs;
     info.minRttMs =

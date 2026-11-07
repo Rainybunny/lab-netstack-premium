@@ -149,6 +149,20 @@ int arpReceiveFrame(const void* frame, int len, int deviceId) {
     return 0;
 }
 
+bool arpLookup(int deviceId, in_addr nextHopId, macaddr_t& mac) {
+    ArpKey key = {deviceId, nextHopId};
+    auto it = cache.find(key);
+    if (it == cache.end() || it->second.resolving) {
+        return false;
+    }
+    const auto now = std::chrono::steady_clock().now();
+    if (now - it->second.lastCached >= ARP_CACHE_TIMEOUT_DUR) {
+        return false;
+    }
+    mac = it->second.mac;
+    return true;
+}
+
 ArpResult arpSendWithResolution(int deviceId, in_addr nextHopId,
                                 const void* packet, int len) {
     ArpKey key = { deviceId, nextHopId };

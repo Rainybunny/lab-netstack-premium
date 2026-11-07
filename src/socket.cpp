@@ -272,6 +272,14 @@ int __wrap_close(int fildes) {
     if (tcpState(conn) == TcpState::Closed) {
         tcpRelease(conn);
     } else {
+        // There is no background sender: give queued data a bounded chance
+        // to reach the peer before the socket state is torn down.
+        const auto deadline = std::chrono::steady_clock().now() +
+                              std::chrono::milliseconds(5000);
+        while (tcpPendingBytes(conn) > 0 && tcpError(conn) == 0 &&
+               std::chrono::steady_clock().now() < deadline) {
+            netstackPump(10);
+        }
         tcpClose(conn);
     }
     fdToConnection.erase(fildes);
@@ -355,9 +363,12 @@ ssize_t __wrap_recv(int socket, void* buf, size_t len, int flags) {
     if (!isStackFd(socket)) {
         return __real_recv(socket, buf, len, flags);
     }
-    if ((flags & ~MSG_NOSIGNAL) != 0) {
+    if ((flags & ~(MSG_NOSIGNAL | MSG_DONTWAIT)) != 0) {
         errno = EOPNOTSUPP;
         return -1;
+    }
+    if ((flags & MSG_DONTWAIT) != 0) {
+        return tcpRead(connectionFor(socket), buf, len);
     }
     return __wrap_read(socket, buf, len);
 }

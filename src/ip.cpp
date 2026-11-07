@@ -2,6 +2,7 @@
 
 #include "arp.h"
 #include "device.h"
+#include "egress.h"
 #include "packetio.h"
 #include "routing.h"
 #include "utils.h"
@@ -59,20 +60,32 @@ int ipForwardPacket(uint8_t* packet, int len) {
     writeU16(packet + 10, ipChecksum(packet, size_t(ihl)));
 
     in_addr dest{};
+    in_addr src{};
     std::memcpy(&dest, packet + 16, sizeof(dest));
+    std::memcpy(&src, packet + 12, sizeof(src));
     RouteResult route{};
     if (!routingLookup(dest, route)) {
         return -1;
     }
 
+    macaddr_t cached{};
+    const macaddr_t* nextHopMac = nullptr;
     if (route.kind == RouteKind::Static) {
-        return sendFrame(packet, len, ETH_TYPE_IPV4,
-                         route.nextHopMac.data(), route.deviceId);
-    } else {
+        nextHopMac = &route.nextHopMac;
+    } else if (arpLookup(route.deviceId, route.nextHopIp, cached)) {
+        nextHopMac = &cached;
+    }
+
+    if (nextHopMac == nullptr) {
         auto result = arpSendWithResolution(route.deviceId,
                                             route.nextHopIp, packet, len);
         return result == ArpResult::Failed ? -1 : 0;
     }
+    if (egressEnabled(route.deviceId)) {
+        return egressEnqueue(route.deviceId, *nextHopMac, packet, len, src);
+    }
+    return sendFrame(packet, len, ETH_TYPE_IPV4, nextHopMac->data(),
+                     route.deviceId);
 }
 
 } // namespace

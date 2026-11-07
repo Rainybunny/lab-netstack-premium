@@ -51,6 +51,7 @@ struct TcpCongestionInfo {
     uint64_t cwnd;
     uint64_t ssthresh;
     uint64_t bytesInFlight;
+    uint64_t bytesQueued;
     uint32_t srttMs;
     uint32_t rtoMs;
     uint32_t minRttMs;
@@ -164,6 +165,11 @@ void tcpClose(int conn);
  * on a handle that never reached the wire (for example, a failed connect).
  */
 void tcpRelease(int conn);
+
+/**
+ * Number of bytes still held by the send buffer (queued or unacknowledged).
+ */
+size_t tcpPendingBytes(int conn);
 
 /**
  * Pending socket error (an errno value), or 0.
