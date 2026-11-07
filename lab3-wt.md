@@ -82,12 +82,12 @@ WSL2 内核没有加载 `sch_netem`、`tbf`、`htb` 等 qdisc，`tc` 无法创�
 
 | 项目 | 结果 |
 | --- | --- |
-| CP8 | 10% 丢包下 200000 字节回显在 3915 ms 内完成并逐字节校验；客户端链路统计 46 个重传段、服务端链路 23 个 |
+| CP8 | 10% 丢包下 200000 字节回显在 3915 ms 内完成并逐字节校验；客户端到服务端方向 46 个重传段，服务端到客户端方向 23 个 |
 | CP10 | 四节点链路上官方 perf 程序 10 轮全部完成，吞吐 $4.6$–$7.7$ MB/s，服务端 `all: 1460000` |
 | CL3 | 权重 $1:2$ 的两条原始 IP 流，接收端字节比 $1.97$ |
 | CL4 | 慢接收端产生 646 个零窗口 ACK，15 s 只读取 660480 字节，发送端被窗口限制在 261121 字节排队 |
-| CL5 | Reno 在 20 s 内送达 2187308 字节，cwnd 出现 58 次明显回落 |
-| CL6 | BBR 在同一瓶颈下送达 3883600 字节，cwnd 仅 1 次大幅回落，模式序列 `0 → 1 → 2 → 3 → 2` |
+| CL5 | Reno 在接收端 20 s 统计窗口内送达 2187308 字节；cwnd 日志采样 21.65 s，出现 58 次明显回落 |
+| CL6 | BBR 在同一瓶颈下 20 s 统计窗口内送达 3883600 字节；cwnd 日志采样 21.64 s，仅 1 次大幅回落，模式序列 `0 → 1 → 2 → 3 → 2` |
 | CL7 | 5 条 TCP 流共享瓶颈，Jain 公平指数 $0.9957$ |
 | CL8 | w3m 浏览器经代理取回 origin 页面，代理转发 216 字节 |
 | CL9 | 21 个单元测试全部通过 |
@@ -132,11 +132,11 @@ bash src/evaluate/run.sh cl10 lab3/checkpoints
 
 ### Checkpoint 9
 
-`lab3/checkpoints/cp9.txt` 使用 `ns1 --- ns2 --- ns3 --- ns4` 链路：ns2、ns3 运行 `lab3_router`，ns4 运行未修改的 `echo_server`，ns1 运行未修改的 `echo_client`。链路状态路由在 6 s 内收敛；客户端三轮均输出 `loop #1/#2/#3 ok.`，服务端三次连接都输出 `all: 15000`。抓包摘要显示第一、第三条连接双向各 29 个数据段、15000 字节；第二连接客户端方向 99 段（其中 67 个重传）、服务端方向 32 段，最终仍完整交付 15000 字节。第二连接的重传来自服务端 `str_echo` 的 1 s sleep（该检查点源码在第二轮故意让服务端每次 read 后 sleep），不是链路错误。
+`lab3/checkpoints/cp9.txt` 使用 `ns1 --- ns2 --- ns3 --- ns4` 链路：ns2、ns3 运行 `lab3_router`，ns4 运行未修改的 `echo_server`，ns1 运行未修改的 `echo_client`。链路状态路由在 6 s 内收敛；客户端三轮均输出 `loop #1/#2/#3 ok.`，服务端三次连接都输出 `all: 15000`。抓包摘要显示第一、第三条连接双向各 29 个数据段、15000 字节；第二连接客户端方向 99 段（其中 67 个重传）、服务端方向 32 段，最终仍完整交付 15000 字节。第二连接的重传来自服务端 `str_echo` 的 1 s sleep（该检查点源码在第二轮故意让服务端每次 read 后 sleep），不是链路错误。服务端输出中的 `Bad file descriptor` 来自官方程序对未被包装的 `setsockopt(SO_REUSEADDR)` 的调用；本实现按 §3.4.1 不实现套接字选项，该调用失败后程序继续运行，详见 Corner Cases。
 
 ### Checkpoint 10
 
-`lab3/checkpoints/cp10.txt` 在同一四节点拓扑上运行未修改的 `perf_server` 与 `perf_client`。客户端 10 轮均完成，吞吐在 $4.6$–$7.7$ MB/s；服务端在客户端进程退出后收到 FIN 并输出 `all: 1460000`。抓包摘要显示两个方向分别有 1033 和 974 个数据段、1442144 和 1335212 字节负载，无重传和 RST。
+`lab3/checkpoints/cp10.txt` 在同一四节点拓扑上运行未修改的 `perf_server` 与 `perf_client`。客户端 10 轮均完成，吞吐在 $4.6$–$7.7$ MB/s；服务端在客户端进程退出后收到 FIN 并输出 `all: 1460000`。抓包摘要显示两个方向分别有 1033 和 974 个数据段、1442144 和 1335212 字节负载，无重传和 RST。服务端同样会因对未包装的 `setsockopt(SO_REUSEADDR)` 的调用打印一次 `Bad file descriptor`，不影响 perf 数据。
 
 ### Challenge 1：同时打开与同时关闭
 
@@ -147,7 +147,7 @@ CLOSED -> SYN_SENT -> SYN_RECEIVED (simultaneous open) -> ESTABLISHED
 ESTABLISHED -> FIN_WAIT_1 -> CLOSING (peer fin) -> TIME_WAIT (fin acked)
 ```
 
-抓包中两个裸 SYN 在 100 µs 内交叉发出，随后是两个 SYN-ACK；关闭时两个 FIN 也交叉。两端都完成了 RFC 793 的同时打开与同时关闭路径。
+抓包中两个裸 SYN 相隔约 591 µs 先后发出（仍都在收到对端 SYN 之前），随后是两个 SYN-ACK；关闭时两个 FIN 相隔约 66 µs 交叉发出。两端都完成了 RFC 793 的同时打开与同时关闭路径。
 
 ### Challenge 2：IPv4 分片与重组
 
@@ -163,11 +163,11 @@ ESTABLISHED -> FIN_WAIT_1 -> CLOSING (peer fin) -> TIME_WAIT (fin acked)
 
 ### Challenge 5：Reno 拥塞控制
 
-`lab3/checkpoints/cl5.txt` 与 `cl5-cwnd.svg`：单条 TCP 流经过 200000 B/s、16384 B 队列的 FIFO 路由器，源端每 100 ms 记录一次 cwnd。20 s 内送达 2187308 字节，cwnd 在 1460 与 65535 字节之间变化，出现 58 次明显回落；SVG 显示慢启动上升、丢包后的锯齿和恢复。回落由路由器队列溢出触发，超时把 `ssthresh` 设为在途量的一半并把 `cwnd` 降为 1 MSS。
+`lab3/checkpoints/cl5.txt` 与 `cl5-cwnd.svg`：单条 TCP 流经过 200000 B/s、16384 B 队列的 FIFO 路由器，源端每 100 ms 记录一次 cwnd。接收端 20 s 统计窗口内送达 2187308 字节；源端 cwnd 日志覆盖 21.65 s，cwnd 在 1460 与 65535 字节之间变化，出现 58 次明显回落；SVG 显示慢启动上升、丢包后的锯齿和恢复。回落由路由器队列溢出触发，超时把 `ssthresh` 设为在途量的一半并把 `cwnd` 降为 1 MSS。
 
 ### Challenge 6：BBR 拥塞控制
 
-`lab3/checkpoints/cl6.txt` 与 `cl6-cwnd.svg`：同一拓扑和瓶颈，设置 `NETSTACK_CC=bbr`。20 s 内送达 3883600 字节，约是 Reno 的 $1.8$ 倍；cwnd 只有 1 次大幅回落，模式序列为 `0(Startup) → 1(Drain) → 2(ProbeBW) → 3(ProbeRTT) → 2`，最终起搏速率 216831 B/s、最小 RTT 12 ms。实现估计送达速率与最小 RTT，按增益计算 `cwnd`，并用令牌桶起搏；没有内核 BBR 的完整带宽过滤器与长期状态，因此结果只说明本实验环境下的行为。
+`lab3/checkpoints/cl6.txt` 与 `cl6-cwnd.svg`：同一拓扑和瓶颈，设置 `NETSTACK_CC=bbr`。接收端 20 s 统计窗口内送达 3883600 字节，约是 Reno 的 $1.8$ 倍；源端 cwnd 日志覆盖 21.64 s，cwnd 只有 1 次大幅回落，模式序列为 `0(Startup) → 1(Drain) → 2(ProbeBW) → 3(ProbeRTT) → 2`，最终起搏速率 233600 B/s、最小 RTT 1 ms。实现估计送达速率与最小 RTT，按增益计算 `cwnd`，并用令牌桶起搏；没有内核 BBR 的完整带宽过滤器与长期状态，因此结果只说明本实验环境下的行为。
 
 ### Challenge 7：五条 TCP 流的公平性
 
@@ -220,6 +220,7 @@ cmake --build build -j4
 - **WFQ 的令牌与量子**：DRR 的轮转指针在令牌不足时停留在当前流，避免首流每次吃掉令牌导致 1:1；每流独立队列上限避免共享尾丢弃饿死某条流。
 - **TCP 选项与窗口扩大**：只支持 MSS 选项；不发送窗口扩大，因此对端不会放大窗口；不实现 SACK、时间戳与带外数据。
 - **官方检查点的 setsockopt**：`echo_server` 与 `perf_server` 会对监听 fd 调用 `setsockopt(SO_REUSEADDR)`。§3.4.1 允许不实现套接字选项，本实现没有包装该调用，因此程序打印一次 `Bad file descriptor` 后继续运行；监听、accept 与数据路径不受影响。
+- **拓扑拆除时的日志噪声**：删除 netns 后，路由器进程的 pcap 描述符会报告接口消失、发送失败或 poll 错误；应用输出与抓包在此之前已完成，这些告警属于资源回收顺序，不是协议失败。
 - **getaddrinfo 笔误**：手册把 `hints->ai_socktype` 写成 `IPPROTO_TCP`，实现按 POSIX 的 `SOCK_STREAM` 校验，并接受 0 与 `SOCK_STREAM`。
 - **pcap 捕获**：接收 snap 长度 65535，捕获缓冲 16 MiB；高吞吐下先记录 `ps_drop` 以区分链路丢包与捕获丢包。
 
