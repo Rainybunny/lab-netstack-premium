@@ -219,6 +219,7 @@ cmake --build build -j4
 - **分片**：分片负载按 8 字节对齐；重组按（源、目的、标识、协议）区分，支持乱序、重复与重叠，30 s 老化；转发分片不重组。
 - **WFQ 的令牌与量子**：DRR 的轮转指针在令牌不足时停留在当前流，避免首流每次吃掉令牌导致 1:1；每流独立队列上限避免共享尾丢弃饿死某条流。
 - **TCP 选项与窗口扩大**：只支持 MSS 选项；不发送窗口扩大，因此对端不会放大窗口；不实现 SACK、时间戳与带外数据。
+- **官方检查点的 setsockopt**：`echo_server` 与 `perf_server` 会对监听 fd 调用 `setsockopt(SO_REUSEADDR)`。§3.4.1 允许不实现套接字选项，本实现没有包装该调用，因此程序打印一次 `Bad file descriptor` 后继续运行；监听、accept 与数据路径不受影响。
 - **getaddrinfo 笔误**：手册把 `hints->ai_socktype` 写成 `IPPROTO_TCP`，实现按 POSIX 的 `SOCK_STREAM` 校验，并接受 0 与 `SOCK_STREAM`。
 - **pcap 捕获**：接收 snap 长度 65535，捕获缓冲 16 MiB；高吞吐下先记录 `ps_drop` 以区分链路丢包与捕获丢包。
 
