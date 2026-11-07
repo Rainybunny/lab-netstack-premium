@@ -16,3 +16,11 @@ unshare --user --map-root-user --mount --net --fork bash -eu -c '
     mkdir /run/netns
     exec bash "$1"
 ' _ "$SCRIPT_DIR/$CP.sh"
+
+# ip netns exec forks the payload and waits; killing the wrapper in a
+# cleanup trap leaves the payload alive. Reap any stack process left behind
+# by this run so its log file stops growing.
+ROOT=$(cd "$SCRIPT_DIR/../.." && pwd)
+for pid in $(pgrep -f "^${BIN:-$ROOT/build}/" 2>/dev/null || true); do
+    kill "$pid" 2>/dev/null || true
+done

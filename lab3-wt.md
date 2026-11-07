@@ -128,15 +128,15 @@ bash src/evaluate/run.sh cl10 lab3/checkpoints
 
 ### Checkpoint 8
 
-`lab3/checkpoints/cp8.txt` 在两端各注入 10% 的 TCP 丢包（种子 1/2），运行 200000 字节的长度前缀回显。客户端输出 `VERIFIED 200000 bytes in 3915 ms`，说明所有丢失段都被重传并最终按序交付。`retrans.py` 在客户端链路统计到 46 个重复发送的数据段（66882 字节），服务端链路 23 个（33580 字节），并列出重复序号、帧号和时间；`SYN=FIN=1` 说明连接完整建立和关闭。丢包由自建栈的 `NETSTACK_LOSS` 在发送路径注入，原因见 WT6 的环境说明。
+`lab3/checkpoints/cp8.txt` 在两端各注入 10% 的 TCP 丢包（种子 1/2），运行 200000 字节的长度前缀回显。客户端输出 `VERIFIED 200000 bytes in 3915 ms`，说明所有丢失段都被重传并最终按序交付。`retrans.py` 在客户端链路统计到客户端到服务端方向 46 个重复发送的数据段（66882 字节），服务端到客户端方向 23 个（33580 字节），并列出重复序号、帧号和时间；`SYN=FIN=1` 说明连接完整建立和关闭。丢包由自建栈的 `NETSTACK_LOSS` 在发送路径注入，原因见 WT6 的环境说明。
 
 ### Checkpoint 9
 
-`lab3/checkpoints/cp9.txt` 使用 `ns1 --- ns2 --- ns3 --- ns4` 链路：ns2、ns3 运行 `lab3_router`，ns4 运行未修改的 `echo_server`，ns1 运行未修改的 `echo_client`。链路状态路由在 6 s 内收敛；客户端三轮均输出 `loop #1/#2/#3 ok.`，服务端三次连接都输出 `all: 15000`。抓包摘要显示每条连接双向各 29 个数据段、15000 字节，无 RST；第二连接的 67 个重传来自服务端 `str_echo` 的 1 s sleep（该检查点源码在第二轮故意让服务端每次 read 后 sleep），不是链路错误。
+`lab3/checkpoints/cp9.txt` 使用 `ns1 --- ns2 --- ns3 --- ns4` 链路：ns2、ns3 运行 `lab3_router`，ns4 运行未修改的 `echo_server`，ns1 运行未修改的 `echo_client`。链路状态路由在 6 s 内收敛；客户端三轮均输出 `loop #1/#2/#3 ok.`，服务端三次连接都输出 `all: 15000`。抓包摘要显示第一、第三条连接双向各 29 个数据段、15000 字节；第二连接客户端方向 99 段（其中 67 个重传）、服务端方向 32 段，最终仍完整交付 15000 字节。第二连接的重传来自服务端 `str_echo` 的 1 s sleep（该检查点源码在第二轮故意让服务端每次 read 后 sleep），不是链路错误。
 
 ### Checkpoint 10
 
-`lab3/checkpoints/cp10.txt` 在同一四节点拓扑上运行未修改的 `perf_server` 与 `perf_client`。客户端 10 轮均完成，吞吐在 $4.6$–$7.7$ MB/s；服务端在客户端进程退出后收到 FIN 并输出 `all: 1460000`。抓包摘要显示 1041/1046 个数据段、约 1.45 MB 双向负载、无重传和 RST。
+`lab3/checkpoints/cp10.txt` 在同一四节点拓扑上运行未修改的 `perf_server` 与 `perf_client`。客户端 10 轮均完成，吞吐在 $4.6$–$7.7$ MB/s；服务端在客户端进程退出后收到 FIN 并输出 `all: 1460000`。抓包摘要显示两个方向分别有 1033 和 974 个数据段、1442144 和 1335212 字节负载，无重传和 RST。
 
 ### Challenge 1：同时打开与同时关闭
 
@@ -224,7 +224,7 @@ cmake --build build -j4
 
 ### 未实现功能
 
-手册 §3.4.1 明确不要求 TCP 流控、拥塞控制之外的部分以外的功能：套接字选项、带外数据、除 MSS 外的 TCP 选项、URL/域名解析、IP 分片（基础任务）均不在必需范围。本实现完成了基础任务与 Bonus PT5/WT6，以及 CL1–CL10；`not-implemented.pdf` 因此为空文件。CL11（自选题目）未在本报告中实现。
+手册 §3.4.1 明确不要求套接字选项、带外数据、除 MSS 外的 TCP 选项、URL/域名解析，以及基础任务中的 IP 分片。本实现完成了基础任务、Bonus PT5/WT6 以及 CL1–CL10；`not-implemented.pdf` 因此为空文件。CL11（自选题目）不在本次范围内。
 
 ### 提交内容
 
