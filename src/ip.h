@@ -2,9 +2,6 @@
  * @file ip.h
  * @brief Library supporting sending / receiving IPv4 packets encapsulated
  * in Ethernet II frames.
- *
- * The public interface follows the names in the lab manual so a C or C++
- * test program can link against it directly.
  */
 
 #pragma once
@@ -68,17 +65,17 @@ int setRoutingTable(const struct in_addr dest,
 /**
  * Process an Ethernet frame that carries an IPv4 packet.
  *
- * The function validates the Ethernet/IP headers, delivers local packets to
+ * Called by the Ethernet dispatcher for IPv4 frames. Validates the IP header,
+ * delivers local packets to
  * the callback registered with setIPPacketReceiveCallback(), and forwards
  * transit packets according to the routing table.
  *
  * @param frame Complete Ethernet frame.
  * @param len Captured frame length, including the Ethernet header and any
  * padding.
- * @param deviceId ID of the receiving device.
  * @return 0 on success or when the frame is ignored, -1 on error.
  */
-int ipReceiveFrame(const void* frame, int len, int deviceId);
+int ipReceiveFrame(const void* frame, int len);
 
 #ifdef __cplusplus
 }

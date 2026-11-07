@@ -1,10 +1,12 @@
 #include "device.h"
 
 #include <cerrno>
-#include <climits>
+#include <chrono>
 #include <cstring>
 #include <map>
 #include <poll.h>
+#include <set>
+#include <thread>
 
 namespace {
 
@@ -34,14 +36,11 @@ struct DeviceInfo {
                 const auto* inet = reinterpret_cast<const sockaddr_in*>(address->addr);
                 DeviceAddress value{};
                 value.address = inet->sin_addr;
-                // A missing netmask is treated as a host route rather than
-                // accidentally installing a default connected route.
-                value.netmask.s_addr = INADDR_BROADCAST;
-                if (address->netmask != nullptr &&
-                    address->netmask->sa_family == AF_INET) {
-                    value.netmask =
-                        reinterpret_cast<const sockaddr_in*>(address->netmask)->sin_addr;
+                if (address->netmask == nullptr) {
+                    continue;
                 }
+                value.netmask =
+                    reinterpret_cast<const sockaddr_in*>(address->netmask)->sin_addr;
                 addresses.push_back(value);
             }
         }
@@ -136,7 +135,7 @@ bool isLocalAddress(int deviceId, in_addr addr) {
 }
 
 int addDevice(const char* device) {
-    static pcap_errbuf_t errbuf;
+    pcap_errbuf_t errbuf{};
 
     if (device == nullptr) {
         return -1;
@@ -156,10 +155,28 @@ int addDevice(const char* device) {
         WARN("addDevice: unknown or non-Ethernet interface %s\n", device);
         return -1;
     }
-    pcap_t* handle = pcap_open_live(device, 65535, 1, 1000, errbuf);
+
+    pcap_t* handle = pcap_create(device, errbuf);
     if (handle == nullptr) {
         WARN("addDevice: %s: %s\n", device, errbuf);
         return -1;
+    }
+    if (pcap_set_snaplen(handle, 65535) < 0 ||
+        pcap_set_promisc(handle, 1) < 0 ||
+        pcap_set_timeout(handle, 100) < 0 ||
+        pcap_set_immediate_mode(handle, 1) < 0) {
+        WARN("addDevice: %s: %s\n", device, pcap_geterr(handle));
+        pcap_close(handle);
+        return -1;
+    }
+    const int activate = pcap_activate(handle);
+    if (activate < 0) {
+        WARN("addDevice: %s: %s\n", device, pcap_geterr(handle));
+        pcap_close(handle);
+        return -1;
+    }
+    if (activate > 0) {
+        WARN("addDevice: %s: %s\n", device, pcap_statustostr(activate));
     }
 
     if (pcap_datalink(handle) != DLT_EN10MB) {
@@ -168,11 +185,11 @@ int addDevice(const char* device) {
         return -1;
     }
 
-    // Do not feed locally injected frames back into the stack. If the
-    // platform rejects this request, packetio drops frames whose source MAC
-    // is the receiving device's MAC instead.
+    // Linux Ethernet/veth supports incoming-only capture.
     if (pcap_setdirection(handle, PCAP_D_IN) < 0) {
         WARN("addDevice: cannot restrict capture direction: %s\n", pcap_geterr(handle));
+        pcap_close(handle);
+        return -1;
     }
 
     int id = devIdCount++;
@@ -196,7 +213,12 @@ int injectFrame(int id, const uint8_t* bytes, int len) {
     }
     int result = pcap_sendpacket(handle, bytes, len);
     if (result != 0) {
-        WARN("injectFrame: device %d: %s\n", id, pcap_geterr(handle));
+        // A link can be administratively down during a topology test. Report
+        // the first failure per device without flooding the log every second.
+        static std::set<int> warnedDevices;
+        if (warnedDevices.insert(id).second) {
+            WARN("injectFrame: device %d: %s\n", id, pcap_geterr(handle));
+        }
         return -1;
     }
     return 0;
@@ -218,7 +240,7 @@ int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
         pcap_t* handle = entry.first;
         int fd = pcap_get_selectable_fd(handle);
         // This loop targets Linux Ethernet/veth capture with poll support.
-        if (fd < 0 || pcap_get_required_select_timeout(handle) != nullptr) {
+        if (fd < 0) {
             WARN("runDeviceReceiveLoop: device %d cannot use this poll loop\n", id);
             return -1;
         }
@@ -235,6 +257,12 @@ int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
         ~RunningReset() { receiveRunning = false; }
     } reset;
 
+    // A veth that is administratively down makes its capture descriptor
+    // report an error. Keep the other devices running; the handle is polled
+    // again in case the link comes back.
+    std::set<int> warnedDevices;
+    std::set<int> warnedDescriptors;
+
     // Bound each device's turn so a busy interface cannot starve the others.
     constexpr int batchSize = 64;
     constexpr int pollTimeoutMs = 100;
@@ -249,12 +277,14 @@ int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
                     break;
                 }
                 if (result < 0) {
-                    WARN("runDeviceReceiveLoop: device %d: %s\n",
-                         id, pcap_geterr(entry.first));
-                    return -1;
+                    if (warnedDevices.insert(id).second) {
+                        WARN("runDeviceReceiveLoop: device %d: %s\n",
+                             id, pcap_geterr(entry.first));
+                    }
+                    break;
                 }
-                // Do not pass truncated captures or an unrepresentable length.
-                if (header->caplen == header->len && header->caplen <= INT_MAX) {
+                // snaplen is 65535; only complete captures are dispatched.
+                if (header->caplen == header->len) {
                     callback(bytes, static_cast<int>(header->caplen), id);
                 }
                 if (count == batchSize - 1) {
@@ -289,11 +319,21 @@ int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
             WARN("runDeviceReceiveLoop: poll: %s\n", strerror(errno));
             return -1;
         }
+        bool descriptorError = false;
         for (const auto& descriptor : descriptors) {
             if (descriptor.revents & (POLLERR | POLLHUP | POLLNVAL)) {
-                WARN("runDeviceReceiveLoop: capture descriptor failed\n");
-                return -1;
+                descriptorError = true;
+                if (warnedDescriptors.insert(descriptor.fd).second) {
+                    WARN("runDeviceReceiveLoop: capture descriptor %d failed\n",
+                         descriptor.fd);
+                }
             }
+        }
+        // poll() returns immediately while a descriptor is in an error state.
+        // A short sleep keeps a down link from spinning the receive loop.
+        if (descriptorError) {
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(pollTimeoutMs));
         }
     }
     return 0;

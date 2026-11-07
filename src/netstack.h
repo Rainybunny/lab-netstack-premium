@@ -16,20 +16,26 @@
  * setIPPacketReceiveCallback() instead of setFrameReceiveCallback().
  * Call this before setRoutingTable() or sendIPPacket().
  *
- * @warning The current implementation adds every non-loopback Ethernet
- * interface it finds. Run it inside a dedicated network namespace, not in the
- * host namespace, so unrelated interfaces are never used for injection.
- *
  * @return 0 on success, -1 if no usable device was found or init failed.
  */
 int netstackInit();
 
 /**
+ * Register an application tick called after the stack's own timers.
+ *
+ * The receive loop wakes at least every 100 ms. The demo uses this hook to
+ * process stdin commands and drive ping timers on the same thread as packet
+ * reception, so no protocol state is shared between threads.
+ *
+ * @param callback Tick handler, or nullptr to clear it. It must not block.
+ */
+void netstackSetAppTick(void (*callback)());
+
+/**
  * Run the single-threaded receive loop until stopped or an error occurs.
  *
  * The receive loop wakes at least every 100 ms so ARP, HELLO and LSA timers
- * can run on the same thread. Interactive stdin commands will be integrated
- * into this loop later by adding a control fd to its poll set.
+ * can run on the same thread.
  *
  * @return 0 when stopped, -1 on error.
  */

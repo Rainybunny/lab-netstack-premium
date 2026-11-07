@@ -26,3 +26,7 @@ target_compile_options(netstack PRIVATE -Wall -Wextra -Wpedantic)
 add_executable(lab1_demo src/lab1_demo.cpp)
 target_link_libraries(lab1_demo PRIVATE netstack)
 target_compile_options(lab1_demo PRIVATE -Wall -Wextra -Wpedantic)
+
+add_executable(lab2_demo src/lab2_demo.cpp)
+target_link_libraries(lab2_demo PRIVATE netstack)
+target_compile_options(lab2_demo PRIVATE -Wall -Wextra -Wpedantic)

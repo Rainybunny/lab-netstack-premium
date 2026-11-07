@@ -1,0 +1,32 @@
+--- ns1 terminal output ---
+LINKSTATE init router=10.100.1.1
+DEVICE id=0 name=l2cp6v12 mac=52:1f:70:46:83:d7 addr=10.100.1.1/255.255.255.0
+READY commands: ping IP [COUNT] | distances | lookup IP | setroute DEST MASK MAC DEV | quit
+LINKSTATE spf routes=0 reachable=1
+CMD lookup 10.100.1.200
+LOOKUP 10.100.1.200
+LOOKUP candidate prefix=10.100.1.0/24 kind=connected metric=0 dev=l2cp6v12
+LOOKUP selected prefix=10.100.1.0/24 kind=connected metric=0 dev=l2cp6v12 nextIp=10.100.1.200
+CMD setroute 10.100.1.128 255.255.255.128 02:00:00:00:00:01 l2cp6v12
+STATIC dest=10.100.1.128 mask=255.255.255.128 mac=02:00:00:00:00:01 dev=l2cp6v12
+CMD lookup 10.100.1.200
+LOOKUP 10.100.1.200
+LOOKUP candidate prefix=10.100.1.0/24 kind=connected metric=0 dev=l2cp6v12
+LOOKUP candidate prefix=10.100.1.128/25 kind=static metric=0 dev=l2cp6v12
+LOOKUP selected prefix=10.100.1.128/25 kind=static metric=0 dev=l2cp6v12 nextMac=02:00:00:00:00:01
+CMD lookup 10.100.1.100
+LOOKUP 10.100.1.100
+LOOKUP candidate prefix=10.100.1.0/24 kind=connected metric=0 dev=l2cp6v12
+LOOKUP selected prefix=10.100.1.0/24 kind=connected metric=0 dev=l2cp6v12 nextIp=10.100.1.100
+CMD ping 10.100.1.200 1
+PING start dst=10.100.1.200 count=1
+PING request seq=0 dst=10.100.1.200 src=10.100.1.1
+PING timeout seq=0
+PING summary transmitted=1 received=0 loss=100%
+CMD quit
+BYE
+
+--- tcpdump output ---
+$ tcpdump -nn -e -vv -r ns1.pcap "arp or icmp"
+10:39:18.717139 52:1f:70:46:83:d7 > 02:00:00:00:00:01, ethertype IPv4 (0x0800), length 60: (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto ICMP (1), length 36)
+    10.100.1.1 > 10.100.1.200: ICMP echo request, id 34092, seq 0, length 16

@@ -1,0 +1,103 @@
+Router IDs:
+ns1: 10.100.1.1
+ns2: 10.100.5.1
+ns3: 10.100.6.1
+ns4: 10.100.3.2
+ns5: 10.100.56.1
+ns6: 10.100.56.2
+
+--- before disconnecting ns5: command output excerpts ---
+[ns1] CMD distances
+DISTANCES router=10.100.1.1 distance=0
+DISTANCES router=10.100.3.2 distance=3
+DISTANCES router=10.100.5.1 distance=1
+DISTANCES router=10.100.6.1 distance=2
+DISTANCES router=10.100.56.1 distance=2
+DISTANCES router=10.100.56.2 distance=3
+[ns2] CMD distances
+DISTANCES router=10.100.1.1 distance=1
+DISTANCES router=10.100.3.2 distance=2
+DISTANCES router=10.100.5.1 distance=0
+DISTANCES router=10.100.6.1 distance=1
+DISTANCES router=10.100.56.1 distance=1
+DISTANCES router=10.100.56.2 distance=2
+[ns3] CMD distances
+DISTANCES router=10.100.1.1 distance=2
+DISTANCES router=10.100.3.2 distance=1
+DISTANCES router=10.100.5.1 distance=1
+DISTANCES router=10.100.6.1 distance=0
+DISTANCES router=10.100.56.1 distance=2
+DISTANCES router=10.100.56.2 distance=1
+[ns4] CMD distances
+DISTANCES router=10.100.1.1 distance=3
+DISTANCES router=10.100.3.2 distance=0
+DISTANCES router=10.100.5.1 distance=2
+DISTANCES router=10.100.6.1 distance=1
+DISTANCES router=10.100.56.1 distance=3
+DISTANCES router=10.100.56.2 distance=2
+[ns5] CMD distances
+DISTANCES router=10.100.1.1 distance=2
+DISTANCES router=10.100.3.2 distance=3
+DISTANCES router=10.100.5.1 distance=1
+DISTANCES router=10.100.6.1 distance=2
+DISTANCES router=10.100.56.1 distance=0
+DISTANCES router=10.100.56.2 distance=1
+[ns6] CMD distances
+DISTANCES router=10.100.1.1 distance=3
+DISTANCES router=10.100.3.2 distance=2
+DISTANCES router=10.100.5.1 distance=2
+DISTANCES router=10.100.6.1 distance=1
+DISTANCES router=10.100.56.1 distance=1
+DISTANCES router=10.100.56.2 distance=0
+
+Matrix derived from the output above (- = unreachable):
+from/to  ns1 ns2 ns3 ns4 ns5 ns6
+ns1        0   1   2   3   2   3
+ns2        1   0   1   2   1   2
+ns3        2   1   0   1   2   1
+ns4        3   2   1   0   3   2
+ns5        2   1   2   3   0   1
+ns6        3   2   1   2   1   0
+
+--- after disconnecting ns5: command output excerpts ---
+[ns1] CMD distances
+DISTANCES router=10.100.1.1 distance=0
+DISTANCES router=10.100.3.2 distance=3
+DISTANCES router=10.100.5.1 distance=1
+DISTANCES router=10.100.6.1 distance=2
+DISTANCES router=10.100.56.2 distance=3
+[ns2] CMD distances
+DISTANCES router=10.100.1.1 distance=1
+DISTANCES router=10.100.3.2 distance=2
+DISTANCES router=10.100.5.1 distance=0
+DISTANCES router=10.100.6.1 distance=1
+DISTANCES router=10.100.56.2 distance=2
+[ns3] CMD distances
+DISTANCES router=10.100.1.1 distance=2
+DISTANCES router=10.100.3.2 distance=1
+DISTANCES router=10.100.5.1 distance=1
+DISTANCES router=10.100.6.1 distance=0
+DISTANCES router=10.100.56.2 distance=1
+[ns4] CMD distances
+DISTANCES router=10.100.1.1 distance=3
+DISTANCES router=10.100.3.2 distance=0
+DISTANCES router=10.100.5.1 distance=2
+DISTANCES router=10.100.6.1 distance=1
+DISTANCES router=10.100.56.2 distance=2
+[ns5] CMD distances
+DISTANCES router=10.100.56.1 distance=0
+[ns6] CMD distances
+DISTANCES router=10.100.1.1 distance=3
+DISTANCES router=10.100.3.2 distance=2
+DISTANCES router=10.100.5.1 distance=2
+DISTANCES router=10.100.6.1 distance=1
+DISTANCES router=10.100.56.2 distance=0
+
+Matrix derived from the output above (- = unreachable):
+from/to  ns1 ns2 ns3 ns4 ns5 ns6
+ns1        0   1   2   3   -   3
+ns2        1   0   1   2   -   2
+ns3        2   1   0   1   -   1
+ns4        3   2   1   0   -   2
+ns5        -   -   -   -   0   -
+ns6        3   2   1   2   -   0

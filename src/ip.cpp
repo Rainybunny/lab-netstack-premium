@@ -16,7 +16,7 @@ uint16_t nextIpId = 0;
 IPPacketReceiveCallback ipReceiveCallback = nullptr;
 
 /**
- * Compute the Internet checksum over a byte buffer.
+ * Compute the Internet checksum over an IPv4 header (a multiple of 4 bytes).
  *
  * Returns the checksum in host byte order. When the checksum field is already
  * present in the buffer, a valid header yields zero.
@@ -24,12 +24,8 @@ IPPacketReceiveCallback ipReceiveCallback = nullptr;
 uint16_t ipChecksum(const void* data, size_t len) {
     const auto* bytes = static_cast<const uint8_t*>(data);
     uint32_t sum = 0;
-    size_t index = 0;
-    for (; index + 1 < len; index += 2) {
+    for (size_t index = 0; index < len; index += 2) {
         sum += (uint16_t(bytes[index]) << 8) | bytes[index + 1];
-    }
-    if (index < len) {
-        sum += uint16_t(bytes[index]) << 8;
     }
     while (sum >> 16) {
         sum = (sum & 0xffffu) + (sum >> 16);
@@ -52,15 +48,9 @@ bool ipIsLocalAddress(in_addr address) {
  * Forward a transit packet. TTL is decremented and the header checksum is
  * recomputed before the route lookup. The original packet buffer is modified.
  */
-int ipForwardPacket(uint8_t* packet, int len, int inDeviceId) {
-    (void)inDeviceId; // Reserved for split-horizon checks.
-    if (packet == nullptr || len < int(IP_HEADER_LEN)) {
-        return -1;
-    }
+int ipForwardPacket(uint8_t* packet, int len) {
+    // ipReceiveFrame has already validated the complete header.
     const int ihl = (packet[0] & 0x0f) * 4;
-    if ((packet[0] >> 4) != 4 || ihl < int(IP_HEADER_LEN) || ihl > len) {
-        return -1;
-    }
     if (packet[8] <= 1) {
         return -1; // TTL expired; ICMP Time Exceeded is not implemented.
     }
@@ -153,14 +143,11 @@ int setRoutingTable(const struct in_addr dest,
     return routingAddStatic(dest, mask, mac, deviceId);
 }
 
-int ipReceiveFrame(const void* frame, int len, int deviceId) {
-    if (frame == nullptr || len < int(ETH_HEADER_LEN + IP_HEADER_LEN)) {
+int ipReceiveFrame(const void* frame, int len) {
+    if (len < int(ETH_HEADER_LEN + IP_HEADER_LEN)) {
         return 0;
     }
     const auto* bytes = (const uint8_t*)(frame);
-    if (readU16(bytes + 12) != ETH_TYPE_IPV4) {
-        return 0;
-    }
 
     const uint8_t* packet = bytes + ETH_HEADER_LEN;
     const int available = len - int(ETH_HEADER_LEN);
@@ -195,6 +182,6 @@ int ipReceiveFrame(const void* frame, int len, int deviceId) {
     } else { // not mine
         std::array<uint8_t, IP_MAX_LEN> forwarded{}; // will be modified
         std::memcpy(forwarded.data(), packet, size_t(totalLen));
-        return ipForwardPacket(forwarded.data(), totalLen, deviceId);
+        return ipForwardPacket(forwarded.data(), totalLen);
     }
 }

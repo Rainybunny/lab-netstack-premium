@@ -11,8 +11,8 @@
  *   IPv4 address and is resolved with ARP.
  *
  * Lookup order is longest prefix first. On equal prefix length, connected
- * routes win over static routes and static routes win over dynamic routes;
- * remaining ties are broken by lower metric and then lower device ID.
+ * routes win over static routes and static routes win over dynamic routes.
+ * Each (prefix, kind) has one entry; link-state selects the dynamic next hop.
  */
 
 #pragma once
@@ -52,6 +52,8 @@ struct RouteEntry {
  */
 struct RouteResult {
     RouteKind kind;
+    in_addr network;
+    in_addr mask;
     in_addr nextHopIp;
     macaddr_t nextHopMac;
     int deviceId;
@@ -113,12 +115,6 @@ void routingClearDynamic();
  * @return true if a route was found, false otherwise.
  */
 bool routingLookup(in_addr dest, RouteResult& result);
-
-/**
- * Periodic routing hook. Currently reserved for route aging; dynamic routes
- * are refreshed by the link-state module.
- */
-void routingTick(TimePoint now);
 
 /**
  * Return a copy of all routing-table entries, primarily for diagnostics.

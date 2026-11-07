@@ -13,15 +13,14 @@
 
 namespace {
 
+void (*appTick)() = nullptr;
+
 int ethDispatch(const void* frame, int len, int deviceId) {
-    if (frame == nullptr || len < int(ETH_HEADER_LEN)) {
-        return 0;
-    }
     const auto* bytes = (const uint8_t*)(frame);
     const uint16_t etherType = readU16(bytes + 12);
     switch (etherType) {
     case ETH_TYPE_IPV4:
-        return ipReceiveFrame(frame, len, deviceId);
+        return ipReceiveFrame(frame, len);
     case ETH_TYPE_ARP:
         return arpReceiveFrame(frame, len, deviceId);
     case ETH_TYPE_LINK_STATE:
@@ -35,7 +34,9 @@ void netstackTick() {
     auto now = std::chrono::steady_clock().now();
     arpTick(now);
     linkStateTick(now);
-    routingTick(now);
+    if (appTick != nullptr) {
+        appTick();
+    }
 }
 
 } // namespace
@@ -43,14 +44,12 @@ void netstackTick() {
 int netstackInit() {
     initAllDevices();
     routingInit();
-    if (arpInit() < 0) {
-        return -1;
-    }
+    arpInit();
 
     int added = 0;
     for (const auto& name : getDeviceNames()) {
-        // Loopback and the Linux "any" pseudo-device are not Ethernet ports.
-        if (name == "lo" || name == "any") {
+        // Loopback and libpcap pseudo-devices are not Ethernet ports.
+        if (name == "lo" || name == "any" || name == "nflog" || name == "nfqueue") {
             continue;
         }
         const int id = addDevice(name.c_str());
@@ -59,9 +58,6 @@ int netstackInit() {
         }
         ++added;
         for (const auto& address : getDeviceAddresses(id)) {
-            if (address.netmask.s_addr == 0) {
-                continue;
-            }
             routingAddConnected(address.address, address.netmask, id);
         }
     }
@@ -77,6 +73,10 @@ int netstackInit() {
     setFrameReceiveCallback(ethDispatch);
     setDeviceTickCallback(netstackTick);
     return 0;
+}
+
+void netstackSetAppTick(void (*callback)()) {
+    appTick = callback;
 }
 
 int netstackRun() {

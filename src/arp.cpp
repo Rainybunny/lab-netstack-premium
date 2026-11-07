@@ -49,9 +49,6 @@ int sendArpRequest(int deviceId, in_addr hop) {
     pkt.ea_hdr.ar_op = htons(ARPOP_REQUEST);
 
     auto sha = getMac(deviceId);
-    if (!sha.has_value()) {
-        return -1;
-    }
     std::memcpy(pkt.arp_sha, sha.value().data(), ARP_HARDWARE_LEN);
 
     auto spa = getDeviceAddresses(deviceId);
@@ -79,9 +76,6 @@ int sendArpReply(int deviceId, const ether_arp &req) {
     std::swap(pkt.arp_tpa, pkt.arp_spa);
 
     auto sha = getMac(deviceId);
-    if (!sha.has_value()) {
-        return -1;
-    }
     std::memcpy(pkt.arp_sha, sha.value().data(), ARP_HARDWARE_LEN); // the answer
 
     return sendFrame(&pkt, ARP_PACKET_LEN, ETH_TYPE_ARP, pkt.arp_tha, deviceId);
@@ -90,9 +84,6 @@ int sendArpReply(int deviceId, const ether_arp &req) {
 void updateCache(int deviceId, const ether_arp& pkt) {
     in_addr hop;
     memcpy(&hop, pkt.arp_spa, ARP_PROTOCOL_LEN);
-    if (!hop.s_addr) {
-        return;
-    }
 
     ArpKey key = { deviceId, hop };
     auto it = cache.find(key);
@@ -108,26 +99,22 @@ void updateCache(int deviceId, const ether_arp& pkt) {
     it->second.retries = 0;
 
     const auto mac = it->second.mac;
-    for (auto& que = it->second.pending; que.size(); que.pop_back()) {
-        auto pkt = que.back();
-        if (sendFrame(pkt.data(), pkt.size(), ETH_TYPE_IPV4,
-                      mac.data(), deviceId) < 0) {
-            // failed... let's resolve again
-            it->second.resolving = true;
-            return;
-        }
+    for (const auto& packet : it->second.pending) {
+        // A failed injection drops the packet; it does not invalidate the MAC.
+        sendFrame(packet.data(), int(packet.size()), ETH_TYPE_IPV4,
+                  mac.data(), deviceId);
     }
+    it->second.pending.clear();
 }
 
 } // namespace
 
-int arpInit() {
+void arpInit() {
     cache.clear();
-    return 0;
 }
 
 int arpReceiveFrame(const void* frame, int len, int deviceId) {
-    if (frame == nullptr || len < int(ETH_HEADER_LEN + ARP_PACKET_LEN)) {
+    if (len < int(ETH_HEADER_LEN + ARP_PACKET_LEN)) {
         return 0;
     }
 
@@ -141,9 +128,6 @@ int arpReceiveFrame(const void* frame, int len, int deviceId) {
     }
 
     auto mac = getMac(deviceId);
-    if (!mac.has_value()) {
-        return -1; // shouldn't happen
-    }
 
     if (pkt.ea_hdr.ar_op == htons(ARPOP_REQUEST)) {
         in_addr tpa;
@@ -167,27 +151,17 @@ int arpReceiveFrame(const void* frame, int len, int deviceId) {
 
 ArpResult arpSendWithResolution(int deviceId, in_addr nextHopId,
                                 const void* packet, int len) {
-    // TODO:
-    // 1. Look up (deviceId, nextHopIp) in the cache.
-    // 2. If valid, send the packet with sendFrame() and return Sent.
-    // 3. Otherwise send a broadcast ARP request, copy the packet into the
-    //    pending queue, and return Queued.
-
-    if (packet == nullptr || len < 0) {
-        return ArpResult::Failed;
-    }
-
     ArpKey key = { deviceId, nextHopId };
     auto it = cache.find(key);
     if (it != cache.end() && !it->second.resolving) {
         auto now = std::chrono::steady_clock().now();
         if (now - it->second.lastCached >= ARP_CACHE_TIMEOUT_DUR) {
-            it->second.resolving = true;
-        } else if (sendFrame(packet, len, ETH_TYPE_IPV4,
-                   it->second.mac.data(), deviceId) < 0) {
-            it->second.resolving = true;
+            cache.erase(it);
+            it = cache.end();
         } else {
-            return ArpResult::Sent;
+            return sendFrame(packet, len, ETH_TYPE_IPV4,
+                             it->second.mac.data(), deviceId) < 0
+                       ? ArpResult::Failed : ArpResult::Sent;
         }
     }
 
@@ -233,10 +207,4 @@ void arpTick(TimePoint now) {
             }
         }
     }
-}
-
-void arpFlushDevice(int deviceId) {
-    auto left = cache.lower_bound({ deviceId, 0 });
-    auto right = cache.upper_bound({ deviceId, (in_addr_t)-1 });
-    cache.erase(left, right);
 }

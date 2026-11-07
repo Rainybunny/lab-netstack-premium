@@ -49,13 +49,6 @@ void dispatchFrame(const void* bytes, int len, int id) {
     if (readU16(frame + 12) < 0x0600) {
         return; // IEEE 802.3 length fields are not Ethernet II EtherTypes.
     }
-    // Fallback for platforms where pcap_setdirection is unavailable: never
-    // process a frame that this device itself transmitted.
-    auto localMac = getMac(id);
-    if (localMac.has_value() &&
-        std::memcmp(frame + 6, localMac->data(), localMac->size()) == 0) {
-        return;
-    }
     if (receiveCallback(bytes, len, id) != 0) {
         WARN("dispatchFrame: callback failed on device %d\n", id);
     }

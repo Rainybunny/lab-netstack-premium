@@ -1,15 +1,6 @@
 /**
  * @file arp.h
  * @brief ARP request/reply handling and next-hop MAC resolution.
- *
- * Design notes:
- * - Cache entries are keyed by (device ID, next-hop IPv4 address).
- * - A packet whose next hop is unresolved is copied into a bounded pending
- *   queue and an ARP request is broadcast on that device.
- * - Requests are retried a small number of times; exhausted entries are
- *   dropped and their queued packets are discarded.
- * - The implementation answers requests only for addresses assigned to the
- *   receiving interface.
  */
 
 #pragma once
@@ -35,17 +26,18 @@ constexpr size_t ARP_MAX_PENDING_PACKETS = 4;
 enum class ArpResult {
     Sent,   ///< A cached mapping existed and the packet was sent.
     Queued, ///< The packet was queued and an ARP request was sent.
-    Failed, ///< Invalid input, no route-owned device, or a full queue.
+    Failed, ///< Frame injection failed or the pending queue is full.
 };
 
 /**
  * Clear the ARP cache and all pending queues.
  */
-int arpInit();
+void arpInit();
 
 /**
  * Process an Ethernet frame carrying an ARP packet.
  *
+ * Called by the Ethernet dispatcher for ARP frames on an active device.
  * The function learns the sender mapping, answers requests for addresses on
  * the receiving interface, and flushes queued packets when a reply arrives.
  *
@@ -64,6 +56,7 @@ int arpReceiveFrame(const void* frame, int len, int deviceId);
  * @param nextHopIp IPv4 address whose MAC is needed.
  * @param packet Complete IP packet to send.
  * @param len Length of the IP packet.
+ * @note Called by the IP layer with a validated packet and route-owned device.
  */
 ArpResult arpSendWithResolution(int deviceId, in_addr nextHopIp,
                                 const void* packet, int len);
@@ -73,9 +66,3 @@ ArpResult arpSendWithResolution(int deviceId, in_addr nextHopIp,
  * Called from the single-threaded receive-loop tick.
  */
 void arpTick(TimePoint now);
-
-/**
- * Drop all cache entries and pending packets associated with a device.
- * Used when an interface goes down.
- */
-void arpFlushDevice(int deviceId);

@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 
 #include <algorithm>
+#include <bit>
 
 namespace {
 
@@ -10,20 +11,11 @@ std::vector<RouteEntry> routes;
 
 bool maskToPrefixLength(in_addr mask, int& prefixLength) {
     const uint32_t value = ntohl(mask.s_addr);
-    bool seenZero = false;
-    int length = 0;
-    for (int bit = 31; bit >= 0; --bit) {
-        const bool isSet = ((value >> bit) & 1u) != 0;
-        if (isSet) {
-            if (seenZero) {
-                return false; // Non-contiguous mask.
-            }
-            ++length;
-        } else {
-            seenZero = true;
-        }
+    const uint32_t inverse = ~value;
+    if ((inverse & (inverse + 1)) != 0) {
+        return false;
     }
-    prefixLength = length;
+    prefixLength = std::popcount(value);
     return true;
 }
 
@@ -72,29 +64,12 @@ int addRoute(in_addr dest, in_addr mask, RouteKind kind, int deviceId,
     return 0;
 }
 
-int routePriority(RouteKind kind) {
-    switch (kind) {
-    case RouteKind::Connected:
-        return 0;
-    case RouteKind::Static:
-        return 1;
-    case RouteKind::Dynamic:
-        return 2;
-    }
-    return 3;
-}
-
 bool isBetter(const RouteEntry& candidate, const RouteEntry& current) {
     if (candidate.prefixLength != current.prefixLength) {
         return candidate.prefixLength > current.prefixLength;
     }
-    if (candidate.kind != current.kind) {
-        return routePriority(candidate.kind) < routePriority(current.kind);
-    }
-    if (candidate.metric != current.metric) {
-        return candidate.metric < current.metric;
-    }
-    return candidate.deviceId < current.deviceId;
+    // addRoute keeps only one entry per (prefix, kind).
+    return candidate.kind < current.kind;
 }
 
 } // namespace
@@ -116,9 +91,6 @@ int routingAddStatic(in_addr dest, in_addr mask,
 
 int routingAddDynamic(in_addr dest, in_addr mask, in_addr nextHopIp,
                       int deviceId, int metric) {
-    if (metric < 0) {
-        return -1;
-    }
     return addRoute(dest, mask, RouteKind::Dynamic, deviceId,
                     nextHopIp, macaddr_t{}, metric);
 }
@@ -146,17 +118,14 @@ bool routingLookup(in_addr dest, RouteResult& result) {
     }
 
     result.kind = best->kind;
+    result.network = best->network;
+    result.mask = best->mask;
     result.nextHopIp = best->kind == RouteKind::Connected ? dest : best->nextHopIp;
     result.nextHopMac = best->nextHopMac;
     result.deviceId = best->deviceId;
     result.prefixLength = best->prefixLength;
     result.metric = best->metric;
     return true;
-}
-
-void routingTick(TimePoint) {
-    // Dynamic routes are refreshed by the link-state module, so there is no
-    // timer-driven work here yet.
 }
 
 std::vector<RouteEntry> routingEntries() {
