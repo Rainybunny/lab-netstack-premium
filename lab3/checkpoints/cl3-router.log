@@ -1,0 +1,54 @@
+LINKSTATE init router=10.120.3.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052039 links=1 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=2 router=10.120.3.2 ip=10.120.3.2
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052040 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE neighbor up dev=1 router=10.120.2.1 ip=10.120.2.1
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511363 links=0 prefixes=1
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE neighbor up dev=0 router=10.120.1.1 ip=10.120.1.1
+LINKSTATE lsa origin=10.120.1.1 seq=10297833186695 links=0 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.1.1 seq=10297833186696 links=1 prefixes=1
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511364 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052041 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511365 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.1.1 seq=10297833186697 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052042 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511366 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.1.1 seq=10297833186698 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052043 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.1.1 seq=10297833186699 links=1 prefixes=1
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511367 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052044 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE neighbor down dev=0 router=10.120.1.1
+LINKSTATE neighbor down dev=1 router=10.120.2.1
+LINKSTATE spf routes=1 reachable=2
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 352: pollDevicesOnce: capture descriptor 3 failed
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 0: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 0: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 352: pollDevicesOnce: capture descriptor 7 failed
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 1: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 2: The interface disappeared
+LINKSTATE neighbor down dev=2 router=10.120.3.2
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 1: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 2: send: No such device or address
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa expired origin=10.120.1.1
+LINKSTATE lsa expired origin=10.120.2.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa expired origin=10.120.3.2
+LINKSTATE spf routes=0 reachable=1

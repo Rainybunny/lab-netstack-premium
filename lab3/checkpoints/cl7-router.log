@@ -1,0 +1,111 @@
+LINKSTATE init router=10.130.6.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483440 links=1 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=5 router=10.130.6.2 ip=10.130.6.2
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483441 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE neighbor up dev=0 router=10.130.1.1 ip=10.130.1.1
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362573 links=0 prefixes=1
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE neighbor up dev=3 router=10.130.4.1 ip=10.130.4.1
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725983 links=0 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE neighbor up dev=2 router=10.130.3.1 ip=10.130.3.1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159441 links=0 prefixes=1
+LINKSTATE spf routes=4 reachable=5
+LINKSTATE neighbor up dev=4 router=10.130.5.1 ip=10.130.5.1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317832 links=0 prefixes=1
+LINKSTATE spf routes=5 reachable=6
+LINKSTATE neighbor up dev=1 router=10.130.2.1 ip=10.130.2.1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166233 links=0 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362574 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166234 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159442 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725984 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317833 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483442 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725985 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362575 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166235 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159443 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317834 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483443 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166236 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362576 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159444 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725986 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317835 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483444 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725987 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362577 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166237 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159445 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317836 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483445 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725988 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362578 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166238 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317837 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159446 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483446 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725989 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.1.1 seq=10396556362579 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166239 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159447 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317838 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE neighbor down dev=5 router=10.130.6.2
+LINKSTATE spf routes=5 reachable=6
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 352: pollDevicesOnce: capture descriptor 3 failed
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 0: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 352: pollDevicesOnce: capture descriptor 13 failed
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 1: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 2: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 3: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 4: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 5: The interface disappeared
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 0: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 1: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 2: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 3: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 4: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 5: send: No such device or address
+LINKSTATE neighbor down dev=0 router=10.130.1.1
+LINKSTATE spf routes=4 reachable=5
+LINKSTATE neighbor down dev=3 router=10.130.4.1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE neighbor down dev=2 router=10.130.3.1
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE neighbor down dev=4 router=10.130.5.1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE neighbor down dev=1 router=10.130.2.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa expired origin=10.130.6.2
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa expired origin=10.130.1.1
+LINKSTATE lsa expired origin=10.130.2.1
+LINKSTATE lsa expired origin=10.130.3.1
+LINKSTATE lsa expired origin=10.130.4.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa expired origin=10.130.5.1
+LINKSTATE spf routes=0 reachable=1

@@ -1,0 +1,102 @@
+LINKSTATE init router=10.130.1.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492948 links=2 prefixes=6
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725983 links=0 prefixes=1
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492949 links=3 prefixes=6
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159441 links=0 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492950 links=4 prefixes=6
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317832 links=0 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492951 links=5 prefixes=6
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166233 links=0 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492952 links=6 prefixes=6
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=0 router=10.130.6.1 ip=10.130.1.2
+LINKSTATE spf routes=6 reachable=6
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166234 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159442 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=6
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725984 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=6
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317833 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=6
+PROGRESS sent=327680 queued=260685 inflight=2920
+PROGRESS sent=524288 queued=260400 inflight=5648
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483442 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492953 links=6 prefixes=6
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725985 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166235 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159443 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317834 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=589824 queued=260709 inflight=11296
+PROGRESS sent=655360 queued=261524 inflight=5186
+PROGRESS sent=786432 queued=258664 inflight=6929
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483443 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492954 links=6 prefixes=6
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=917504 queued=261377 inflight=15957
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166236 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159444 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725986 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317835 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=1048576 queued=259086 inflight=14559
+PROGRESS sent=1114112 queued=261849 inflight=7300
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483444 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=1179648 queued=261086 inflight=9427
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492955 links=6 prefixes=6
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725987 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166237 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159445 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317836 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=1310720 queued=257238 inflight=7664
+PROGRESS sent=1441792 queued=261616 inflight=9277
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483445 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=1572864 queued=260773 inflight=13182
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492956 links=6 prefixes=6
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725988 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166238 links=1 prefixes=1
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317837 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159446 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=1703936 queued=260313 inflight=7887
+PROGRESS sent=1769472 queued=256305 inflight=2920
+LINKSTATE lsa origin=10.130.6.2 seq=10390563483446 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=1966080 queued=261615 inflight=23521
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492957 links=6 prefixes=6
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.4.1 seq=10396566725989 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.2.1 seq=10396663166239 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.3.1 seq=10396613159447 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+LINKSTATE lsa origin=10.130.5.1 seq=10396643317838 links=1 prefixes=1
+LINKSTATE spf routes=6 reachable=7
+PROGRESS sent=2097152 queued=262058 inflight=9817
+LINKSTATE lsa origin=10.130.6.1 seq=10390992492958 links=5 prefixes=6
+LINKSTATE spf routes=6 reachable=6

@@ -1,0 +1,32 @@
+=== CL3: weighted fair queueing at the router ===
+topology: l3c3n1 --- l3c3n4 --- l3c3n3
+          l3c3n2 ---/
+weights: 10.120.1.1 = 1, 10.120.2.1 = 2
+router egress: l3c3v43, rate 200000 B/s, queue 32768 B, WFQ
+two raw-IP flows (1000-byte datagrams) keep the queue backlogged,
+so the router scheduler, not TCP feedback, determines the split.
+
+waiting 6 s for link-state convergence
+=== sink final totals ===
+TOTAL 10.120.1.1 1328000
+TOTAL 10.120.2.1 2618000
+
+=== last per-flow samples ===
+FLOW 10.120.1.1 1328000
+FLOW 10.120.2.1 2618000
+FLOW 10.120.1.1 1328000
+FLOW 10.120.2.1 2618000
+
+=== source send counts ===
+/home/vullar/Studio/Playground/lab-netstack-premium/lab3/checkpoints/cl3-source1.log:SENT packets=8461 bytes=8461000
+/home/vullar/Studio/Playground/lab-netstack-premium/lab3/checkpoints/cl3-source2.log:SENT packets=8428 bytes=8428000
+
+=== weighted ratio ===
+10.120.1.1 1328000 bytes
+10.120.2.1 2618000 bytes
+ratio = 1.97 (weights are 1:2)
+
+=== router route state ===
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE spf routes=1 reachable=2

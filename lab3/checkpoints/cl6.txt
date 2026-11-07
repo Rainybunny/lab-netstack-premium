@@ -1,0 +1,23 @@
+=== CL6: BBR congestion control over a FIFO bottleneck ===
+topology: l3c6n1 (source) --- l3c6n2 (router) --- l3c6n3 (sink)
+router egress: l3c6v23, FIFO rate 200000 B/s, queue 16384 B
+the source logs cwnd every 100 ms with NETSTACK_CC_LOG=1.
+
+waiting 5 s for link-state convergence
+=== sink totals ===
+ACCEPT 10.181.1.1:49152
+TOTAL 10.181.1.1:49152 3883600
+
+=== source progress (last samples) ===
+PROGRESS sent=3407872 queued=261572 inflight=5840
+PROGRESS sent=3604480 queued=261080 inflight=5840
+PROGRESS sent=3801088 queued=260588 inflight=5840
+PROGRESS sent=3997696 queued=260096 inflight=5840
+
+=== cwnd trace ===
+samples=209 duration=21.64s cwnd min=5840 max=65535 decreases=1
+mode sequence: 0 -> 1 -> 2 -> 3 -> 2
+final pacing rate: 233600 bytes/s, min RTT: 1 ms
+plot written to /home/vullar/Studio/Playground/lab-netstack-premium/lab3/checkpoints/cl6-cwnd.svg
+
+The plot is saved as lab3/checkpoints/cl6-cwnd.svg.

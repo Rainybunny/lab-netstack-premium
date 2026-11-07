@@ -1,0 +1,52 @@
+LINKSTATE init router=10.120.1.1
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+LINKSTATE spf routes=0 reachable=1
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+LINKSTATE lsa origin=10.120.3.1 seq=10292033065279 links=3 prefixes=3
+LINKSTATE spf routes=0 reachable=1
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/ip.cpp: 151: sendIPPacket: no route or send failure
+LINKSTATE neighbor up dev=0 router=10.120.3.1 ip=10.120.1.2
+LINKSTATE spf routes=3 reachable=2
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511364 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=3
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052041 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.1 seq=10292033065280 links=3 prefixes=3
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511365 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052042 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.1 seq=10292033065281 links=3 prefixes=3
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511366 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052043 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.1 seq=10292033065282 links=3 prefixes=3
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.2.1 seq=10297822511367 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.120.3.2 seq=10291833052044 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+SENT packets=8461 bytes=8461000

@@ -1,0 +1,39 @@
+LINKSTATE init router=10.180.1.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.180.2.1 seq=10324662340124 links=2 prefixes=2
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.180.2.2 seq=10324542899301 links=1 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=0 router=10.180.2.1 ip=10.180.1.2
+LINKSTATE spf routes=2 reachable=3
+PROGRESS sent=393216 queued=260786 inflight=8432
+PROGRESS sent=524288 queued=262038 inflight=7334
+PROGRESS sent=720896 queued=260882 inflight=9595
+LINKSTATE lsa origin=10.180.2.1 seq=10324662340125 links=2 prefixes=2
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE lsa origin=10.180.2.2 seq=10324542899302 links=1 prefixes=1
+LINKSTATE spf routes=2 reachable=3
+PROGRESS sent=851968 queued=260837 inflight=10247
+PROGRESS sent=983040 queued=257727 inflight=3968
+PROGRESS sent=1179648 queued=260955 inflight=6066
+PROGRESS sent=1310720 queued=261086 inflight=18086
+LINKSTATE lsa origin=10.180.2.1 seq=10324662340126 links=2 prefixes=2
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE lsa origin=10.180.2.2 seq=10324542899303 links=1 prefixes=1
+LINKSTATE spf routes=2 reachable=3
+PROGRESS sent=1441792 queued=258585 inflight=3163
+PROGRESS sent=1572864 queued=261523 inflight=6669
+PROGRESS sent=1703936 queued=260370 inflight=7569
+PROGRESS sent=1835008 queued=260851 inflight=6330
+LINKSTATE lsa origin=10.180.2.1 seq=10324662340127 links=2 prefixes=2
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE lsa origin=10.180.2.2 seq=10324542899304 links=1 prefixes=1
+LINKSTATE spf routes=2 reachable=3
+PROGRESS sent=1966080 queued=260518 inflight=6286
+PROGRESS sent=2097152 queued=261469 inflight=7509
+PROGRESS sent=2228224 queued=261152 inflight=7508
+PROGRESS sent=2359296 queued=260833 inflight=7508
+LINKSTATE lsa origin=10.180.2.1 seq=10324662340128 links=2 prefixes=2
+LINKSTATE spf routes=2 reachable=3
+LINKSTATE lsa origin=10.180.2.2 seq=10324542899305 links=1 prefixes=1
+LINKSTATE spf routes=2 reachable=3

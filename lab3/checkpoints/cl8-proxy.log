@@ -1,0 +1,6 @@
+PROXY listening on 127.0.0.1:8080
+LINKSTATE init router=10.140.1.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.140.1.2 seq=9286382894923 links=1 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+PROXY GET http://10.140.1.2/ forwarded=216

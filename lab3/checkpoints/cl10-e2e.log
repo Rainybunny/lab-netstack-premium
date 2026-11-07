@@ -1,0 +1,11 @@
+LINKSTATE init router=10.190.1.2
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=0 router=10.190.1.1 ip=10.190.1.1
+LINKSTATE lsa origin=10.190.1.1 seq=10459843387859 links=0 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+ECHO 200000
+LINKSTATE lsa origin=10.190.1.1 seq=10459843387860 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+ighbor up dev=0 router=10.190.1.2 ip=10.190.1.2
+LINKSTATE spf routes=1 reachable=2
+VERIFIED 200000 bytes in 68 ms

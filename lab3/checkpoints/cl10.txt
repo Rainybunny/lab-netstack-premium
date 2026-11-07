@@ -1,0 +1,20 @@
+=== end-to-end coverage workload ===
+ECHO 200000
+ighbor up dev=0 router=10.190.1.2 ip=10.190.1.2
+VERIFIED 200000 bytes in 68 ms
+src/arp.cpp                          96    125  76.80%
+src/device.cpp                      137    221  61.99%
+src/egress.cpp                       10    174   5.75%
+src/ip.cpp                           81    147  55.10%
+src/ipfrag.cpp                       66     86  76.74%
+src/link_state.cpp                  246    293  83.96%
+src/netstack.cpp                     45     55  81.82%
+src/packetio.cpp                     39     63  61.90%
+src/routing.cpp                      70     81  86.42%
+src/socket.cpp                      144    256  56.25%
+src/tcp.cpp                         511    969  52.73%
+src/tcp.h                             2      2 100.00%
+src/utils.h                          40     74  54.05%
+TOTAL                              1487   2546  58.41%
+HTML report written to /home/vullar/Studio/Playground/lab-netstack-premium/lab3/checkpoints/cl10-coverage.html
+HTML report: /home/vullar/Studio/Playground/lab-netstack-premium/lab3/checkpoints/cl10-coverage.html

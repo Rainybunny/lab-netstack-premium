@@ -1,0 +1,30 @@
+LINKSTATE init router=10.110.7.2
+Bad file descriptor
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=0 router=10.110.7.1 ip=10.110.7.1
+LINKSTATE lsa origin=10.110.7.1 seq=9115293685885 links=0 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+new connection
+6 LINKSTATE lsa origin=10.110.7.1 seq=9115293685886 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+12 13 14 63 68 LINKSTATE lsa origin=10.110.7.1 seq=9115293685887 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+70 72 74 76 78 LINKSTATE lsa origin=10.110.7.1 seq=9115293685888 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+80 82 84 86 87 LINKSTATE lsa origin=10.110.7.1 seq=9115293685889 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+88 89 4184 8279 12374 LINKSTATE lsa origin=10.110.7.1 seq=9115293685890 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+15000 all: 15000
+new connection
+6 12 13 14 LINKSTATE lsa origin=10.110.7.1 seq=9115293685891 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+63 68 70 72 74 LINKSTATE lsa origin=10.110.7.1 seq=9115293685892 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+76 78 80 82 84 LINKSTATE lsa origin=10.110.7.1 seq=9115293685893 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+86 87 88 89 4184 LINKSTATE lsa origin=10.110.7.1 seq=9115293685894 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+8279 12374 15000 all: 15000
+new connection
+6 12 13 14 63 68 70 72 74 76 78 80 82 84 86 87 88 89 4184 8279 12374 15000 all: 15000

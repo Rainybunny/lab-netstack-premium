@@ -1,0 +1,7 @@
+LINKSTATE init router=10.110.8.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.110.8.2 seq=9164462856762 links=1 prefixes=1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=0 router=10.110.8.2 ip=10.110.8.2
+LINKSTATE spf routes=1 reachable=2
+VERIFIED 200000 bytes in 3915 ms

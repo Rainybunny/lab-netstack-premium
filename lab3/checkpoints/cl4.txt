@@ -1,0 +1,43 @@
+=== CL4: TCP flow control with a slow receiver ===
+topology: l3c4n1 (source, 10.170.1.1) --- l3c4n2 (sink, 10.170.1.2)
+the sink reads 1024 bytes and then keeps pumping the stack for 20 ms
+without reading, so its 65535-byte receive buffer fills and the
+advertised window closes; the source is throttled instead of dropping.
+
+=== slow sink output ===
+FLOW 10.170.1.1:49152 445440
+FLOW 10.170.1.1:49152 490496
+FLOW 10.170.1.1:49152 535552
+FLOW 10.170.1.1:49152 580608
+FLOW 10.170.1.1:49152 625664
+TOTAL 10.170.1.1:49152 660480
+
+=== source progress (last samples) ===
+PROGRESS sent=786432 queued=261121 inflight=0
+PROGRESS sent=851968 queued=261121 inflight=0
+PROGRESS sent=917504 queued=261121 inflight=0
+PROGRESS sent=983040 queued=261121 inflight=0
+
+=== advertised window analysis ===
+10.170.1.2:10086 -> 10.170.1.1:49152: 1336 ACKs, window min=0 max=65535 zero=646
+  zero window at frame 109 t=1794025604.124924
+  zero window at frame 112 t=1794025604.148919
+  zero window at frame 117 t=1794025604.171920
+  zero window at frame 120 t=1794025604.196003
+  zero window at frame 123 t=1794025604.219614
+  window timeline around the first zero:
+    frame 104 t=1794025604.124855 window=3779
+    frame 106 t=1794025604.124881 window=2319
+    frame 107 t=1794025604.124893 window=1024
+    frame 109 t=1794025604.124924 window=0
+    frame 110 t=1794025604.148732 window=1024
+    frame 112 t=1794025604.148919 window=0
+    frame 115 t=1794025604.171732 window=1024
+    frame 117 t=1794025604.171920 window=0
+    frame 118 t=1794025604.195843 window=1024
+    frame 120 t=1794025604.196003 window=0
+    frame 121 t=1794025604.219415 window=1024
+10.170.1.1:49152 -> 10.170.1.2:10086: 698 ACKs, window min=65535 max=65535 zero=0
+
+The receive window reaches zero while the application is not reading,
+and reopens in small increments as the slow sink consumes data.

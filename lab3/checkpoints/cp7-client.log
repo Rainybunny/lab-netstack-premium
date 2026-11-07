@@ -1,0 +1,24 @@
+LINKSTATE init router=10.110.7.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367759 links=1 prefixes=1
+LINKSTATE neighbor up dev=0 router=10.110.7.2 ip=10.110.7.2
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367760 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367761 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367762 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367763 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+loop #1 ok.
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367764 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367765 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367766 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+LINKSTATE lsa origin=10.110.7.2 seq=9113283367767 links=1 prefixes=1
+LINKSTATE spf routes=1 reachable=2
+loop #2 ok.
+loop #3 ok.

@@ -1,0 +1,633 @@
+LINKSTATE init router=10.110.93.1
+LINKSTATE spf routes=0 reachable=1
+LINKSTATE neighbor up dev=0 router=10.110.92.1 ip=10.110.92.1
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522647 links=0 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE neighbor up dev=1 router=10.110.93.2 ip=10.110.93.2
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676408 links=0 prefixes=1
+LINKSTATE spf routes=3 reachable=3
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522648 links=1 prefixes=2
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676409 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=3
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676410 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=3
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522649 links=1 prefixes=2
+LINKSTATE spf routes=3 reachable=3
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875448 links=0 prefixes=1
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522650 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875449 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676411 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522651 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875450 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676412 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522652 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875451 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676413 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522653 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875452 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676414 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522654 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875453 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676415 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522655 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875454 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676416 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522656 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875455 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676417 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522657 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875456 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676418 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522658 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875457 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676419 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522659 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875458 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.93.2 seq=9175712676420 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522660 links=2 prefixes=2
+LINKSTATE spf routes=3 reachable=4
+LINKSTATE lsa origin=10.110.91.1 seq=9181742875459 links=1 prefixes=1
+LINKSTATE spf routes=3 reachable=4
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 352: pollDevicesOnce: capture descriptor 5 failed
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522661 links=1 prefixes=2
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 221: injectFrame: device 1: send: No such device or address
+warning /home/vullar/Studio/Playground/lab-netstack-premium/src/device.cpp: 293: pollDevicesOnce: device 1: The interface disappeared
+LINKSTATE spf routes=3 reachable=3
+LINKSTATE neighbor down dev=1 router=10.110.93.2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522662 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522663 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa expired origin=10.110.93.2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa expired origin=10.110.91.1
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522664 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522665 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522666 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522667 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522668 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522669 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522670 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522671 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522672 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522673 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522674 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522675 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522676 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522677 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522678 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522679 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522680 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522681 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522682 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522683 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522684 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522685 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522686 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522687 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522688 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522689 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522690 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522691 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522692 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522693 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522694 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522695 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522696 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522697 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522698 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522699 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522700 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522701 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522702 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522703 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522704 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522705 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522706 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522707 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522708 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522709 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522710 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522711 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522712 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522713 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522714 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522715 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522716 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522717 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522718 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522719 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522720 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522721 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522722 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522723 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522724 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522725 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522726 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522727 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522728 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522729 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522730 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522731 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522732 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522733 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522734 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522735 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522736 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522737 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522738 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522739 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522740 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522741 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522742 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522743 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522744 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522745 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522746 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522747 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522748 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522749 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522750 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522751 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522752 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522753 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522754 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522755 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522756 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522757 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522758 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522759 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522760 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522761 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522762 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522763 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522764 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522765 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522766 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522767 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522768 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522769 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522770 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522771 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522772 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522773 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522774 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522775 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522776 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522777 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522778 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522779 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522780 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522781 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522782 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522783 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522784 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522785 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522786 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522787 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522788 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522789 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522790 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522791 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522792 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522793 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522794 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522795 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522796 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522797 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522798 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522799 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522800 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522801 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522802 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522803 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522804 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522805 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522806 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522807 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522808 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522809 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522810 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522811 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522812 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522813 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522814 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522815 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522816 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522817 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522818 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522819 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522820 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522821 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522822 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522823 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522824 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522825 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522826 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522827 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522828 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522829 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522830 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522831 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522832 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522833 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522834 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522835 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522836 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522837 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522838 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522839 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522840 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522841 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522842 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522843 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522844 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522845 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522846 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522847 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522848 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522849 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522850 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522851 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522852 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522853 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522854 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522855 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522856 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522857 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522858 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522859 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522860 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522861 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522862 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522863 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522864 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522865 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522866 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522867 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522868 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522869 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522870 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522871 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522872 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522873 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522874 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522875 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522876 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522877 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522878 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522879 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522880 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522881 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522882 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522883 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522884 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522885 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522886 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522887 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522888 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522889 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522890 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522891 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522892 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522893 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522894 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522895 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522896 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522897 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522898 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522899 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522900 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522901 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522902 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522903 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522904 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522905 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522906 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522907 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522908 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522909 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522910 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522911 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522912 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522913 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522914 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522915 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522916 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522917 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522918 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522919 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522920 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522921 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522922 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522923 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522924 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522925 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522926 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522927 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522928 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522929 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522930 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522931 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2
+LINKSTATE lsa origin=10.110.92.1 seq=9174883522932 links=1 prefixes=2
+LINKSTATE spf routes=2 reachable=2

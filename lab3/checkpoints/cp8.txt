@@ -1,0 +1,41 @@
+=== CP8: reliable delivery over a lossy link ===
+topology: l38n1 --- l38n2 (10.110.8.0/24)
+loss: NETSTACK_LOSS=10 (drops 10% of transmitted IPv4 TCP frames;
+      the WSL kernel here exposes no netem/tbf qdisc, so the stack's
+      reproducible loss injector stands in for tc netem)
+traffic: 200000-byte length-prefixed echo, verified byte by byte
+
+=== echo client output ===
+VERIFIED 200000 bytes in 3915 ms
+
+=== echo server output ===
+ECHO 200000
+
+=== retransmissions observed on the client link ===
+10.110.8.1:49152 -> 10.110.8.2:10086
+  data segments: 344, unique payload bytes: 350569
+  retransmitted segments: 46, repeated payload bytes: 66882
+    seq=2349485933 len=1460 sent 2 times: frame 50 at 1794024763.449089, frame 98 at 1794024763.651507
+    seq=2349487393 len=1460 sent 2 times: frame 51 at 1794024763.449110, frame 100 at 1794024763.651615
+    seq=2349488853 len=1460 sent 2 times: frame 52 at 1794024763.449157, frame 101 at 1794024763.651678
+    seq=2349493233 len=1460 sent 2 times: frame 58 at 1794024763.449297, frame 134 at 1794024763.652168
+    seq=2349494693 len=1460 sent 2 times: frame 59 at 1794024763.449341, frame 104 at 1794024763.651727
+    seq=2349496153 len=1460 sent 3 times: frame 62 at 1794024763.449405, frame 106 at 1794024763.651762, frame 136 at 1794024763.652193
+    seq=2349497613 len=1460 sent 3 times: frame 63 at 1794024763.449448, frame 108 at 1794024763.651787, frame 138 at 1794024763.652224
+    seq=2349499073 len=1460 sent 3 times: frame 66 at 1794024763.449506, frame 110 at 1794024763.651827, frame 140 at 1794024763.652248
+  SYN=1 FIN=1 RST=0
+10.110.8.2:10086 -> 10.110.8.1:49152
+  data segments: 236, unique payload bytes: 234738
+  retransmitted segments: 23, repeated payload bytes: 33580
+    seq=986556930 len=1460 sent 2 times: frame 688 at 1794024764.489223, frame 711 at 1794024764.692197
+    seq=986558390 len=1460 sent 2 times: frame 689 at 1794024764.489250, frame 712 at 1794024764.692222
+    seq=986559850 len=1460 sent 2 times: frame 691 at 1794024764.489305, frame 713 at 1794024764.692253
+    seq=986561310 len=1460 sent 2 times: frame 693 at 1794024764.489363, frame 714 at 1794024764.692270
+    seq=986562770 len=1460 sent 2 times: frame 694 at 1794024764.489380, frame 715 at 1794024764.692291
+    seq=986564230 len=1460 sent 2 times: frame 696 at 1794024764.489415, frame 717 at 1794024764.692338
+    seq=986565690 len=1460 sent 2 times: frame 698 at 1794024764.489453, frame 718 at 1794024764.692364
+    seq=986568610 len=1460 sent 2 times: frame 702 at 1794024764.489549, frame 720 at 1794024764.692430
+  SYN=1 FIN=1 RST=0
+
+The client verified the complete 200000-byte payload, so the gaps
+created by the injected loss were repaired by retransmission.
