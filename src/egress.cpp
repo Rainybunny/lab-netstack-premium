@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 
 #include <algorithm>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <deque>
@@ -14,15 +15,17 @@
 
 namespace {
 
+constexpr int64_t DRR_QUANTUM = 1500; // bytes per weight unit
+
 struct QueueEntry {
     std::vector<uint8_t> packet;
     macaddr_t mac;
-    double finish = 0;
 };
 
 struct FlowQueue {
     std::deque<QueueEntry> queue;
-    double lastFinish = 0;
+    int64_t deficit = 0;
+    int weight = 1;
 };
 
 struct EgressState {
@@ -33,9 +36,9 @@ struct EgressState {
     std::deque<QueueEntry> fifo;
     std::map<uint32_t, FlowQueue> flows;
     std::map<uint32_t, int> weights;
+    std::map<uint32_t, FlowQueue>::iterator current;
     size_t queuedBytes = 0;
     double tokens = 0;
-    double virtualTime = 0;
     TimePoint last;
 };
 
@@ -65,10 +68,29 @@ int parseWeight(const char* text, uint32_t& address, int& weight) {
     return 0;
 }
 
+void logSent(uint32_t flow, size_t length, TimePoint now) {
+    static std::map<uint32_t, uint64_t> counts;
+    static TimePoint last;
+    counts[flow] += length;
+    if (last.time_since_epoch().count() == 0) {
+        last = now;
+        return;
+    }
+    if (now - last < std::chrono::seconds(1)) {
+        return;
+    }
+    last = now;
+    for (const auto& [key, bytes] : counts) {
+        WARN("egress flow=%u bytes=%llu\n", key,
+             static_cast<unsigned long long>(bytes));
+    }
+}
+
 } // namespace
 
 void egressInit() {
     egress = EgressState{};
+    egress.current = egress.flows.end();
 
     const char* device = std::getenv("NETSTACK_EGRESS_DEV");
     const char* rate = std::getenv("NETSTACK_EGRESS_RATE");
@@ -136,13 +158,13 @@ int egressEnqueue(int deviceId, const macaddr_t& mac, const void* packet,
 
     if (egress.wfq) {
         const uint32_t key = source.s_addr;
-        const auto weightIt = egress.weights.find(key);
-        const int weight = weightIt == egress.weights.end() ? 1 : weightIt->second;
         FlowQueue& flow = egress.flows[key];
-        entry.finish = std::max(egress.virtualTime, flow.lastFinish) +
-                       double(len) / double(weight);
-        flow.lastFinish = entry.finish;
+        const auto weightIt = egress.weights.find(key);
+        flow.weight = weightIt == egress.weights.end() ? 1 : weightIt->second;
         flow.queue.push_back(std::move(entry));
+        if (egress.current == egress.flows.end()) {
+            egress.current = egress.flows.begin();
+        }
     } else {
         egress.fifo.push_back(std::move(entry));
     }
@@ -165,15 +187,33 @@ void egressTick(TimePoint now) {
         uint32_t selectedFlow = 0;
 
         if (egress.wfq) {
-            for (auto& [key, flow] : egress.flows) {
+            // Deficit round robin: each flow may send weight * quantum bytes
+            // per round. Empty flows reset their deficit.
+            bool found = false;
+            for (size_t attempt = 0; attempt < egress.flows.size(); ++attempt) {
+                if (egress.current == egress.flows.end()) {
+                    egress.current = egress.flows.begin();
+                }
+                FlowQueue& flow = egress.current->second;
                 if (flow.queue.empty()) {
+                    flow.deficit = 0;
+                    ++egress.current;
                     continue;
                 }
-                if (selected == nullptr ||
-                    flow.queue.front().finish < selected->finish) {
-                    selected = &flow.queue.front();
-                    selectedFlow = key;
+                const size_t length = flow.queue.front().packet.size();
+                if (flow.deficit < int64_t(length)) {
+                    flow.deficit += DRR_QUANTUM * flow.weight;
                 }
+                if (flow.deficit >= int64_t(length)) {
+                    selected = &flow.queue.front();
+                    selectedFlow = egress.current->first;
+                    found = true;
+                    break;
+                }
+                ++egress.current;
+            }
+            if (!found) {
+                break;
             }
         } else if (!egress.fifo.empty()) {
             selected = &egress.fifo.front();
@@ -191,12 +231,16 @@ void egressTick(TimePoint now) {
                   selected->mac.data(), egress.deviceId);
         egress.tokens -= double(length);
         egress.queuedBytes -= std::min(egress.queuedBytes, length);
+        if (std::getenv("NETSTACK_EGRESS_LOG") != nullptr) {
+            logSent(selectedFlow, length, now);
+        }
         if (egress.wfq) {
-            egress.virtualTime = std::max(egress.virtualTime, selected->finish);
-            FlowQueue& flow = egress.flows[selectedFlow];
+            FlowQueue& flow = egress.current->second;
+            flow.deficit -= int64_t(length);
             flow.queue.pop_front();
             if (flow.queue.empty()) {
-                egress.flows.erase(selectedFlow);
+                flow.deficit = 0;
+                ++egress.current;
             }
         } else {
             egress.fifo.pop_front();

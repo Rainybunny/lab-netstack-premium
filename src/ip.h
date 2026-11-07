@@ -68,7 +68,8 @@ int setRoutingTable(const struct in_addr dest,
  * Called by the Ethernet dispatcher for IPv4 frames. Validates the IP header,
  * delivers local packets to
  * the callback registered with setIPPacketReceiveCallback(), and forwards
- * transit packets according to the routing table.
+ * transit packets according to the routing table. Fragments addressed to a
+ * local interface are reassembled before delivery.
  *
  * @param frame Complete Ethernet frame.
  * @param len Captured frame length, including the Ethernet header and any
@@ -76,6 +77,16 @@ int setRoutingTable(const struct in_addr dest,
  * @return 0 on success or when the frame is ignored, -1 on error.
  */
 int ipReceiveFrame(const void* frame, int len);
+
+/**
+ * Clear fragment-reassembly state. Called once during stack initialization.
+ */
+void ipInit(void);
+
+/**
+ * Age fragment-reassembly entries. Called from the receive-loop tick.
+ */
+void ipTick(void);
 
 #ifdef __cplusplus
 }

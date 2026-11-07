@@ -3,18 +3,23 @@
 #include "arp.h"
 #include "device.h"
 #include "egress.h"
+#include "ipfrag.h"
 #include "packetio.h"
 #include "routing.h"
 #include "utils.h"
 
+#include <algorithm>
 #include <array>
 #include <cstring>
+#include <vector>
 
 namespace {
 
 constexpr uint8_t DEFAULT_TTL = 64;
+constexpr int IP_FRAGMENT_PAYLOAD = 1480; // multiple of eight
 uint16_t nextIpId = 0;
 IPPacketReceiveCallback ipReceiveCallback = nullptr;
+IpReassembler reassembler;
 
 /**
  * Compute the Internet checksum over an IPv4 header (a multiple of 4 bytes).
@@ -88,11 +93,27 @@ int ipForwardPacket(uint8_t* packet, int len) {
                      route.deviceId);
 }
 
+int sendIpPacketViaRoute(const uint8_t* packet, int len) {
+    in_addr dest{};
+    std::memcpy(&dest, packet + 16, sizeof(dest));
+    RouteResult route{};
+    if (!routingLookup(dest, route)) {
+        return -1;
+    }
+    if (route.kind == RouteKind::Static) {
+        return sendFrame(packet, len, ETH_TYPE_IPV4, route.nextHopMac.data(),
+                         route.deviceId);
+    }
+    const auto result = arpSendWithResolution(route.deviceId, route.nextHopIp,
+                                              packet, len);
+    return result == ArpResult::Failed ? -1 : 0;
+}
+
 } // namespace
 
 int sendIPPacket(const struct in_addr src, const struct in_addr dest,
                  int proto, const void* buf, int len) {
-    if (len < 0 || len > int(IP_MAX_PAYLOAD)) {
+    if (len < 0 || len > int(IpReassembler::MAX_PAYLOAD)) {
         return -1;
     }
     if (len > 0 && buf == nullptr) {
@@ -102,37 +123,40 @@ int sendIPPacket(const struct in_addr src, const struct in_addr dest,
         return -1;
     }
 
-    std::array<uint8_t, IP_MAX_LEN> packet{};
-    const int totalLen = int(IP_HEADER_LEN) + len;
-    packet[0] = 0x45; // Version 4, IHL 5 (no options).
-    packet[1] = 0;    // TOS.
-    writeU16(packet.data() + 2, uint16_t(totalLen));
-    writeU16(packet.data() + 4, nextIpId++);
-    writeU16(packet.data() + 6, 0); // DF = 0, fragment offset = 0.
-    packet[8] = DEFAULT_TTL;
-    packet[9] = uint8_t(proto);
-    writeU16(packet.data() + 10, 0);
-    std::memcpy(packet.data() + 12, &src, sizeof(src));
-    std::memcpy(packet.data() + 16, &dest, sizeof(dest));
-    writeU16(packet.data() + 10, ipChecksum(packet.data(), IP_HEADER_LEN));
-    if (len > 0) {
-        std::memcpy(packet.data() + IP_HEADER_LEN, buf, size_t(len));
+    const uint16_t id = nextIpId++;
+    const auto* payload = static_cast<const uint8_t*>(buf);
+    int offset = 0;
+    while (offset < len || (len == 0 && offset == 0)) {
+        const int chunk = std::min(IP_FRAGMENT_PAYLOAD, len - offset);
+        const bool more = offset + chunk < len;
+        uint8_t packet[IP_MAX_LEN] = {};
+        const int totalLen = int(IP_HEADER_LEN) + chunk;
+        packet[0] = 0x45; // Version 4, IHL 5 (no options).
+        packet[1] = 0;    // TOS.
+        writeU16(packet + 2, uint16_t(totalLen));
+        writeU16(packet + 4, id);
+        writeU16(packet + 6,
+                 uint16_t((more ? 0x2000 : 0) | (offset / 8)));
+        packet[8] = DEFAULT_TTL;
+        packet[9] = uint8_t(proto);
+        writeU16(packet + 10, 0);
+        std::memcpy(packet + 12, &src, sizeof(src));
+        std::memcpy(packet + 16, &dest, sizeof(dest));
+        if (chunk > 0) {
+            std::memcpy(packet + IP_HEADER_LEN, payload + offset,
+                        size_t(chunk));
+        }
+        writeU16(packet + 10, ipChecksum(packet, IP_HEADER_LEN));
+        if (sendIpPacketViaRoute(packet, totalLen) < 0) {
+            WARN("sendIPPacket: no route or send failure\n");
+            return -1;
+        }
+        offset += chunk;
+        if (len == 0) {
+            break;
+        }
     }
-
-    RouteResult route{};
-    if (!routingLookup(dest, route)) {
-        WARN("sendIPPacket: no route to destination\n");
-        return -1;
-    }
-
-    if (route.kind == RouteKind::Static) {
-        return sendFrame(packet.data(), totalLen, ETH_TYPE_IPV4,
-                         route.nextHopMac.data(), route.deviceId);
-    } else {
-        auto result = arpSendWithResolution(route.deviceId, route.nextHopIp,
-                                            packet.data(), totalLen);
-        return result == ArpResult::Failed ? -1 : 0;
-    }
+    return 0;
 }
 
 int setIPPacketReceiveCallback(IPPacketReceiveCallback callback) {
@@ -180,13 +204,26 @@ int ipReceiveFrame(const void* frame, int len) {
         return 0; // Invalid header checksum.
     }
 
-    const uint16_t off = readU16(packet + 6);
-    if ((off & 0x2000u) != 0 || (off & 0x1fffu) != 0) {
-        return 0; // Fragmentation is not supported.
-    }
+    const uint16_t fragmentField = readU16(packet + 6);
+    const bool moreFragments = (fragmentField & 0x2000u) != 0;
+    const int fragmentOffset = (fragmentField & 0x1fffu) * 8;
 
     in_addr dest{};
     std::memcpy(&dest, packet + 16, sizeof(dest));
+    if (moreFragments || fragmentOffset != 0) {
+        if (!ipIsLocalAddress(dest)) {
+            std::array<uint8_t, IP_MAX_LEN> forwarded{}; // will be modified
+            std::memcpy(forwarded.data(), packet, size_t(totalLen));
+            return ipForwardPacket(forwarded.data(), totalLen);
+        }
+        std::vector<uint8_t> assembled;
+        if (!reassembler.add(packet, totalLen, assembled) ||
+            ipReceiveCallback == nullptr) {
+            return 0;
+        }
+        return ipReceiveCallback(assembled.data(), int(assembled.size()));
+    }
+
     if (ipIsLocalAddress(dest)) { // it's mine
         if (ipReceiveCallback == nullptr) {
             return 0;
@@ -197,4 +234,12 @@ int ipReceiveFrame(const void* frame, int len) {
         std::memcpy(forwarded.data(), packet, size_t(totalLen));
         return ipForwardPacket(forwarded.data(), totalLen);
     }
+}
+
+void ipInit() {
+    reassembler.clear();
+}
+
+void ipTick() {
+    reassembler.tick(std::chrono::steady_clock().now());
 }

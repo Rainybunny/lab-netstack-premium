@@ -375,7 +375,7 @@ int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
     } reset;
 
     while (!receiveStop) {
-        if (pollDevicesOnce(callback, 100) < 0) {
+        if (pollDevicesOnce(callback, 10) < 0) {
             return -1;
         }
     }

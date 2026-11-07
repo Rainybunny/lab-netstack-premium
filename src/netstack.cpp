@@ -38,6 +38,7 @@ void netstackTick() {
     linkStateTick(now);
     egressTick(now);
     tcpTick(now);
+    ipTick();
     if (appTick != nullptr) {
         appTick();
     }
@@ -49,6 +50,7 @@ int netstackInit() {
     initAllDevices();
     routingInit();
     arpInit();
+    ipInit();
 
     int added = 0;
     for (const auto& name : getDeviceNames()) {

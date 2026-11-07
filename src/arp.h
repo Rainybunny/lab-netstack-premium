@@ -21,7 +21,7 @@ constexpr uint8_t ARP_PROTOCOL_LEN = 4;
 constexpr int ARP_CACHE_TIMEOUT_MS = 60000;
 constexpr int ARP_REQUEST_RETRY_MS = 1000;
 constexpr int ARP_MAX_RETRIES = 3;
-constexpr size_t ARP_MAX_PENDING_PACKETS = 4;
+constexpr size_t ARP_MAX_PENDING_PACKETS = 64;
 
 enum class ArpResult {
     Sent,   ///< A cached mapping existed and the packet was sent.

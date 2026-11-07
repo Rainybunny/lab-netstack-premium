@@ -15,6 +15,9 @@
  *       echo the payload.
  *   echoclient IP PORT BYTES
  *       Send a length-prefixed pattern, read the echo, and verify it.
+ *   simopen LOCAL_IP LOCAL_PORT PEER_IP PEER_PORT OPEN_MS CLOSE_MS
+ *       Bind a fixed port, connect at OPEN_MS, exchange a byte, close at
+ *       CLOSE_MS, then keep pumping so both close state machines run.
  */
 
 #include "netstack.h"
@@ -28,6 +31,7 @@
 #include <cerrno>
 #include <chrono>
 #include <cstdio>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -299,6 +303,75 @@ int runEchoServer(int port) {
     return 0;
 }
 
+int64_t epochMilliseconds() {
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+               std::chrono::system_clock::now().time_since_epoch())
+        .count();
+}
+
+void waitUntil(int64_t epochMs) {
+    while (epochMilliseconds() < epochMs) {
+        netstackPump(10);
+    }
+}
+
+int runSimultaneous(const char* localIp, int localPort, const char* peerIp,
+                    int peerPort, int64_t openMs, int64_t closeMs) {
+    const int fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (fd < 0) {
+        perror("socket");
+        return 1;
+    }
+    sockaddr_in local{};
+    if (!makeAddress(localIp, std::to_string(localPort).c_str(), local)) {
+        fprintf(stderr, "invalid local address\n");
+        return 1;
+    }
+    if (bind(fd, reinterpret_cast<sockaddr*>(&local), sizeof(local)) < 0) {
+        perror("bind");
+        return 1;
+    }
+    sockaddr_in peer{};
+    if (!makeAddress(peerIp, std::to_string(peerPort).c_str(), peer)) {
+        fprintf(stderr, "invalid peer address\n");
+        return 1;
+    }
+
+    waitUntil(openMs);
+    printf("CONNECTING at %lld\n",
+           static_cast<long long>(epochMilliseconds()));
+    if (connect(fd, reinterpret_cast<sockaddr*>(&peer), sizeof(peer)) < 0) {
+        perror("connect");
+        return 1;
+    }
+    printf("OPENED at %lld\n", static_cast<long long>(epochMilliseconds()));
+
+    const char message[] = "hello";
+    if (writeAll(fd, message, sizeof(message) - 1) != ssize_t(sizeof(message) - 1)) {
+        fprintf(stderr, "write failed\n");
+        return 1;
+    }
+    char received[sizeof(message) - 1] = {};
+    if (readExact(fd, received, sizeof(received)) != ssize_t(sizeof(received)) ||
+        std::memcmp(received, message, sizeof(received)) != 0) {
+        fprintf(stderr, "exchange failed\n");
+        return 1;
+    }
+    printf("EXCHANGED at %lld\n", static_cast<long long>(epochMilliseconds()));
+
+    waitUntil(closeMs);
+    printf("CLOSING at %lld\n", static_cast<long long>(epochMilliseconds()));
+    close(fd);
+    // The socket descriptor is gone, but the TCB keeps running in the timer
+    // tick. Pump long enough for the FIN handshake to reach TIME_WAIT.
+    const int64_t until = epochMilliseconds() + 5000;
+    while (epochMilliseconds() < until) {
+        netstackPump(10);
+    }
+    printf("CLOSED at %lld\n", static_cast<long long>(epochMilliseconds()));
+    return 0;
+}
+
 int runEchoClient(const char* ip, int port, uint32_t length) {
     const int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd < 0) {
@@ -376,6 +449,12 @@ int main(int argc, char* argv[]) {
     if (mode == "echoclient" && argc == 5) {
         return runEchoClient(argv[2], std::atoi(argv[3]),
                              uint32_t(std::strtoul(argv[4], nullptr, 10)));
+    }
+    if (mode == "simopen" && argc == 8) {
+        return runSimultaneous(
+            argv[2], std::atoi(argv[3]), argv[4], std::atoi(argv[5]),
+            std::strtoll(argv[6], nullptr, 10),
+            std::strtoll(argv[7], nullptr, 10));
     }
     fprintf(stderr, "invalid arguments\n");
     return 1;
