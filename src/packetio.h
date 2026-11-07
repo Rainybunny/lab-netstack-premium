@@ -53,6 +53,17 @@ int setFrameReceiveCallback(FrameReceiveCallback callback);
 int runReceiveLoop();
 
 /**
+ * Process pending frames once and drive the protocol tick.
+ *
+ * Register a callback with setFrameReceiveCallback() before calling. This is
+ * used by blocking socket calls to make progress while they wait.
+ *
+ * @param timeoutMs Poll timeout in milliseconds, or 0 for non-blocking.
+ * @return 0 on success, -1 if no callback is set or reception fails.
+ */
+int pollReceive(int timeoutMs);
+
+/**
  * Stop reception after the current callback returns.
  * @note Call from the receive callback only; not signal-safe or thread-safe.
  */

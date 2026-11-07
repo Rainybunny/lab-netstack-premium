@@ -6,6 +6,7 @@
 #include "link_state.h"
 #include "packetio.h"
 #include "routing.h"
+#include "tcp.h"
 #include "utils.h"
 
 #include <cstdint>
@@ -34,6 +35,7 @@ void netstackTick() {
     auto now = std::chrono::steady_clock().now();
     arpTick(now);
     linkStateTick(now);
+    tcpTick(now);
     if (appTick != nullptr) {
         appTick();
     }
@@ -81,4 +83,8 @@ void netstackSetAppTick(void (*callback)()) {
 
 int netstackRun() {
     return runReceiveLoop();
+}
+
+int netstackPump(int timeoutMs) {
+    return pollReceive(timeoutMs);
 }

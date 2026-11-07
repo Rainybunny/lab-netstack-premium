@@ -34,9 +34,21 @@ void netstackSetAppTick(void (*callback)());
 /**
  * Run the single-threaded receive loop until stopped or an error occurs.
  *
- * The receive loop wakes at least every 100 ms so ARP, HELLO and LSA timers
- * can run on the same thread.
+ * The receive loop wakes at least every 100 ms so ARP, HELLO, LSA and TCP
+ * timers can run on the same thread.
  *
  * @return 0 when stopped, -1 on error.
  */
 int netstackRun();
+
+/**
+ * Drive the stack once from a blocking socket call.
+ *
+ * Processes pending frames, runs protocol timers, then waits up to
+ * @p timeoutMs for more input. Must not be called from inside the receive
+ * loop.
+ *
+ * @param timeoutMs Poll timeout in milliseconds.
+ * @return 0 on success, -1 on error.
+ */
+int netstackPump(int timeoutMs);

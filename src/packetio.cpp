@@ -64,6 +64,14 @@ int runReceiveLoop() {
     return runDeviceReceiveLoop(dispatchFrame);
 }
 
+int pollReceive(int timeoutMs) {
+    if (receiveCallback == nullptr) {
+        WARN("pollReceive: no callback registered\n");
+        return -1;
+    }
+    return pollDevicesOnce(dispatchFrame, timeoutMs);
+}
+
 void stopReceiveLoop() {
     stopDeviceReceiveLoop();
 }

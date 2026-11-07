@@ -164,6 +164,7 @@ int addDevice(const char* device) {
     if (pcap_set_snaplen(handle, 65535) < 0 ||
         pcap_set_promisc(handle, 1) < 0 ||
         pcap_set_timeout(handle, 100) < 0 ||
+        pcap_set_buffer_size(handle, 16 * 1024 * 1024) < 0 ||
         pcap_set_immediate_mode(handle, 1) < 0) {
         WARN("addDevice: %s: %s\n", device, pcap_geterr(handle));
         pcap_close(handle);
@@ -228,27 +229,143 @@ void setDeviceTickCallback(void (*callback)()) {
     tickCallback = callback;
 }
 
-int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
-    if (receiveRunning || callback == nullptr || activeHandles.empty()) {
-        WARN("runDeviceReceiveLoop: invalid state or callback\n");
-        return -1;
-    }
+namespace {
 
-    std::vector<pollfd> descriptors;
+bool pollPrepared = false;
+std::vector<pollfd> pollDescriptors;
+// A veth that is administratively down makes its capture descriptor report
+// an error. Keep the other devices running; the handle is polled again in
+// case the link comes back.
+std::set<int> warnedDevices;
+std::set<int> warnedDescriptors;
+
+int preparePollDescriptors() {
+    if (pollPrepared) {
+        return 0;
+    }
     pcap_errbuf_t errbuf{};
     for (const auto& [id, entry] : activeHandles) {
         pcap_t* handle = entry.first;
         int fd = pcap_get_selectable_fd(handle);
         // This loop targets Linux Ethernet/veth capture with poll support.
         if (fd < 0) {
-            WARN("runDeviceReceiveLoop: device %d cannot use this poll loop\n", id);
+            WARN("preparePollDescriptors: device %d cannot use this poll loop\n", id);
             return -1;
         }
         if (pcap_setnonblock(handle, 1, errbuf) < 0) {
-            WARN("runDeviceReceiveLoop: device %d: %s\n", id, errbuf);
+            WARN("preparePollDescriptors: device %d: %s\n", id, errbuf);
             return -1;
         }
-        descriptors.push_back({fd, POLLIN, 0});
+        pollDescriptors.push_back({fd, POLLIN, 0});
+    }
+    pollPrepared = true;
+    return 0;
+}
+
+bool stopping() {
+    return receiveRunning && receiveStop;
+}
+
+} // namespace
+
+int pollDevicesOnce(void (*callback)(const void*, int, int), int timeoutMs) {
+    if (callback == nullptr || activeHandles.empty()) {
+        WARN("pollDevicesOnce: invalid state or callback\n");
+        return -1;
+    }
+    if (preparePollDescriptors() < 0) {
+        return -1;
+    }
+
+    // Bound each device's turn so a busy interface cannot starve the others.
+    constexpr int batchSize = 64;
+    bool pending = false;
+    for (const auto& [id, entry] : activeHandles) {
+        for (int count = 0; count < batchSize && !stopping(); ++count) {
+            pcap_pkthdr* header = nullptr;
+            const u_char* bytes = nullptr;
+            int result = pcap_next_ex(entry.first, &header, &bytes);
+            if (result == 0) {
+                break;
+            }
+            if (result < 0) {
+                if (warnedDevices.insert(id).second) {
+                    WARN("pollDevicesOnce: device %d: %s\n",
+                         id, pcap_geterr(entry.first));
+                }
+                break;
+            }
+            // snaplen is 65535; only complete captures are dispatched.
+            if (header->caplen == header->len) {
+                callback(bytes, static_cast<int>(header->caplen), id);
+            }
+            if (count == batchSize - 1) {
+                pending = true;
+            }
+        }
+        if (stopping()) {
+            return 0;
+        }
+    }
+
+    // Timers run on the same thread as packet processing. Keeping the
+    // poll timeout finite is what lets HELLO, LSA, ARP and TCP time out.
+    if (tickCallback != nullptr) {
+        tickCallback();
+    }
+    if (stopping()) {
+        return 0;
+    }
+
+    if (std::getenv("NETSTACK_PCAP_STATS") != nullptr) {
+        static TimePoint lastStats;
+        const TimePoint now = std::chrono::steady_clock().now();
+        if (lastStats.time_since_epoch().count() == 0 ||
+            now - lastStats >= std::chrono::seconds(1)) {
+            lastStats = now;
+            for (const auto& [id, entry] : activeHandles) {
+                pcap_stat stats{};
+                if (pcap_stats(entry.first, &stats) == 0) {
+                    WARN("pcap device %d recv=%u drop=%u\n", id, stats.ps_recv,
+                         stats.ps_drop);
+                }
+            }
+        }
+    }
+
+    // libpcap may still hold packets even when its fd is not readable.
+    // Only sleep after every handle has reported an empty capture buffer.
+    int result = poll(pollDescriptors.data(), pollDescriptors.size(),
+                      pending ? 0 : timeoutMs);
+    if (result < 0) {
+        if (errno == EINTR) {
+            return 0;
+        }
+        WARN("pollDevicesOnce: poll: %s\n", strerror(errno));
+        return -1;
+    }
+    bool descriptorError = false;
+    for (const auto& descriptor : pollDescriptors) {
+        if (descriptor.revents & (POLLERR | POLLHUP | POLLNVAL)) {
+            descriptorError = true;
+            if (warnedDescriptors.insert(descriptor.fd).second) {
+                WARN("pollDevicesOnce: capture descriptor %d failed\n",
+                     descriptor.fd);
+            }
+        }
+    }
+    // poll() returns immediately while a descriptor is in an error state.
+    // A short sleep keeps a down link from spinning the receive loop.
+    if (descriptorError) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    return 0;
+}
+
+int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
+    if (receiveRunning || callback == nullptr || activeHandles.empty()) {
+        WARN("runDeviceReceiveLoop: invalid state or callback\n");
+        return -1;
     }
 
     receiveRunning = true;
@@ -257,83 +374,9 @@ int runDeviceReceiveLoop(void (*callback)(const void*, int, int)) {
         ~RunningReset() { receiveRunning = false; }
     } reset;
 
-    // A veth that is administratively down makes its capture descriptor
-    // report an error. Keep the other devices running; the handle is polled
-    // again in case the link comes back.
-    std::set<int> warnedDevices;
-    std::set<int> warnedDescriptors;
-
-    // Bound each device's turn so a busy interface cannot starve the others.
-    constexpr int batchSize = 64;
-    constexpr int pollTimeoutMs = 100;
     while (!receiveStop) {
-        bool pending = false;
-        for (const auto& [id, entry] : activeHandles) {
-            for (int count = 0; count < batchSize && !receiveStop; ++count) {
-                pcap_pkthdr* header = nullptr;
-                const u_char* bytes = nullptr;
-                int result = pcap_next_ex(entry.first, &header, &bytes);
-                if (result == 0) {
-                    break;
-                }
-                if (result < 0) {
-                    if (warnedDevices.insert(id).second) {
-                        WARN("runDeviceReceiveLoop: device %d: %s\n",
-                             id, pcap_geterr(entry.first));
-                    }
-                    break;
-                }
-                // snaplen is 65535; only complete captures are dispatched.
-                if (header->caplen == header->len) {
-                    callback(bytes, static_cast<int>(header->caplen), id);
-                }
-                if (count == batchSize - 1) {
-                    pending = true;
-                }
-            }
-            if (receiveStop) {
-                break;
-            }
-        }
-        if (receiveStop) {
-            break;
-        }
-
-        // Timers run on the same thread as packet processing. Keeping the
-        // poll timeout finite is what lets HELLO, LSA and ARP time out.
-        if (tickCallback != nullptr) {
-            tickCallback();
-        }
-        if (receiveStop) {
-            break;
-        }
-
-        // libpcap may still hold packets even when its fd is not readable.
-        // Only sleep after every handle has reported an empty capture buffer.
-        int result = poll(descriptors.data(), descriptors.size(),
-                          pending ? 0 : pollTimeoutMs);
-        if (result < 0) {
-            if (errno == EINTR) {
-                continue;
-            }
-            WARN("runDeviceReceiveLoop: poll: %s\n", strerror(errno));
+        if (pollDevicesOnce(callback, 100) < 0) {
             return -1;
-        }
-        bool descriptorError = false;
-        for (const auto& descriptor : descriptors) {
-            if (descriptor.revents & (POLLERR | POLLHUP | POLLNVAL)) {
-                descriptorError = true;
-                if (warnedDescriptors.insert(descriptor.fd).second) {
-                    WARN("runDeviceReceiveLoop: capture descriptor %d failed\n",
-                         descriptor.fd);
-                }
-            }
-        }
-        // poll() returns immediately while a descriptor is in an error state.
-        // A short sleep keeps a down link from spinning the receive loop.
-        if (descriptorError) {
-            std::this_thread::sleep_for(
-                std::chrono::milliseconds(pollTimeoutMs));
         }
     }
     return 0;

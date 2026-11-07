@@ -98,6 +98,21 @@ int injectFrame(int id, const uint8_t* bytes, int len);
 int runDeviceReceiveLoop(void (*callback)(const void*, int, int));
 
 /**
+ * Process one batch of pending frames, run the protocol tick, then wait up to
+ * @p timeoutMs for more frames.
+ *
+ * This is the body of runDeviceReceiveLoop(), exposed so a blocking socket
+ * call can drive the stack while it waits. The first call prepares the poll
+ * descriptors; subsequent calls reuse them.
+ *
+ * @param callback Handler for captured bytes, captured length and device-ID.
+ * @param timeoutMs Poll timeout in milliseconds, or 0 to return immediately
+ * after draining pending frames.
+ * @return 0 on success, -1 on setup or capture error.
+ */
+int pollDevicesOnce(void (*callback)(const void*, int, int), int timeoutMs);
+
+/**
  * Request that the current receive loop stop after the current callback.
  * @note Call from the receive callback, not another thread or a signal handler.
  */
