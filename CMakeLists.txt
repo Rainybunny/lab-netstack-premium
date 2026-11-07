@@ -93,7 +93,7 @@ if(NETSTACK_COVERAGE)
 endif()
 
 enable_testing()
-add_executable(unit_tests tests/unit_tests.cpp)
+add_executable(unit_tests src/evaluate/unit_tests.cpp)
 target_link_libraries(unit_tests PRIVATE netstack)
 target_link_options(unit_tests PRIVATE ${NETSTACK_WRAP_OPTIONS})
 target_compile_options(unit_tests PRIVATE -Wall -Wextra -Wpedantic)

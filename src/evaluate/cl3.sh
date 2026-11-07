@@ -32,7 +32,9 @@ say "=== CL3: weighted fair queueing at the router ==="
 say "topology: $N1 --- $N4 --- $N3"
 say "          $N2 ---/"
 say "weights: 10.120.1.1 = 1, 10.120.2.1 = 2"
-say "router egress: $V43, rate 120000 B/s, queue 16384 B, WFQ"
+say "router egress: $V43, rate 200000 B/s, queue 32768 B, WFQ"
+say "two raw-IP flows (1000-byte datagrams) keep the queue backlogged,"
+say "so the router scheduler, not TCP feedback, determines the split."
 say ""
 
 make_ns "$N1" "$N2" "$N3" "$N4"
@@ -58,34 +60,40 @@ for binding in "$N1 $V14" "$N4 $V41" "$N2 $V24" "$N4 $V42" \
     ip netns exec "$1" ip link set "$2" up
 done
 
-NETSTACK_EGRESS_DEV="$V43" NETSTACK_EGRESS_RATE=120000 \
-NETSTACK_EGRESS_QUEUE=16384 NETSTACK_EGRESS_MODE=wfq \
+NETSTACK_EGRESS_DEV="$V43" NETSTACK_EGRESS_RATE=200000 \
+NETSTACK_EGRESS_QUEUE=32768 NETSTACK_EGRESS_MODE=wfq \
 NETSTACK_EGRESS_WEIGHTS="10.120.1.1=1,10.120.2.1=2" \
     ip netns exec "$N4" stdbuf -oL -eL "$BIN/lab3_router" \
     > "$OUT/cl3-router.log" 2>&1 &
 BACKGROUND="$!"
-ip netns exec "$N3" stdbuf -oL -eL "$BIN/tcp_tool" sink 10086 2 20 \
+ip netns exec "$N3" stdbuf -oL -eL "$BIN/ip_tool" rawsink 30 \
     > "$OUT/cl3-sink.log" 2>&1 &
-BACKGROUND="$BACKGROUND $!"
+SINK_PID=$!
+BACKGROUND="$BACKGROUND $SINK_PID"
 say "waiting 6 s for link-state convergence"
 sleep 6
 
-timeout 24 ip netns exec "$N1" stdbuf -oL -eL "$BIN/tcp_tool" \
-    source 10.120.3.2 10086 50000000 > "$OUT/cl3-source1.log" 2>&1 &
+timeout 25 ip netns exec "$N1" stdbuf -oL -eL "$BIN/ip_tool" \
+    rawsend 10.120.1.1 10.120.3.2 20 > "$OUT/cl3-source1.log" 2>&1 &
 S1=$!
-timeout 24 ip netns exec "$N2" stdbuf -oL -eL "$BIN/tcp_tool" \
-    source 10.120.3.2 10086 50000000 > "$OUT/cl3-source2.log" 2>&1 &
+timeout 25 ip netns exec "$N2" stdbuf -oL -eL "$BIN/ip_tool" \
+    rawsend 10.120.2.1 10.120.3.2 20 > "$OUT/cl3-source2.log" 2>&1 &
 S2=$!
 BACKGROUND="$BACKGROUND $S1 $S2"
 wait "$S1" 2>/dev/null || true
 wait "$S2" 2>/dev/null || true
+wait "$SINK_PID" 2>/dev/null || true
 sleep 1
 
-say "=== sink accept and final totals ==="
-grep -E '^(ACCEPT|TOTAL)' "$OUT/cl3-sink.log" | tee -a "$TRANSCRIPT" || true
+say "=== sink final totals ==="
+grep -E '^TOTAL' "$OUT/cl3-sink.log" | tee -a "$TRANSCRIPT" || true
 say ""
 say "=== last per-flow samples ==="
 grep '^FLOW' "$OUT/cl3-sink.log" | tail -4 | tee -a "$TRANSCRIPT" || true
+say ""
+say "=== source send counts ==="
+grep '^SENT' "$OUT/cl3-source1.log" "$OUT/cl3-source2.log" |
+    tee -a "$TRANSCRIPT" || true
 say ""
 say "=== weighted ratio ==="
 python3 -I - "$OUT/cl3-sink.log" <<'PY' | tee -a "$TRANSCRIPT"

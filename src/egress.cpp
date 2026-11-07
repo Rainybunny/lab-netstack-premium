@@ -24,6 +24,7 @@ struct QueueEntry {
 
 struct FlowQueue {
     std::deque<QueueEntry> queue;
+    size_t queuedBytes = 0;
     int64_t deficit = 0;
     int weight = 1;
 };
@@ -66,6 +67,24 @@ int parseWeight(const char* text, uint32_t& address, int& weight) {
     address = parsed.s_addr;
     weight = value;
     return 0;
+}
+
+void logEnqueued(uint32_t flow, size_t length, TimePoint now) {
+    static std::map<uint32_t, uint64_t> counts;
+    static TimePoint last;
+    counts[flow] += length;
+    if (last.time_since_epoch().count() == 0) {
+        last = now;
+        return;
+    }
+    if (now - last < std::chrono::seconds(1)) {
+        return;
+    }
+    last = now;
+    for (const auto& [key, bytes] : counts) {
+        WARN("egress enq flow=%u bytes=%llu\n", key,
+             static_cast<unsigned long long>(bytes));
+    }
 }
 
 void logSent(uint32_t flow, size_t length, TimePoint now) {
@@ -147,10 +166,6 @@ int egressEnqueue(int deviceId, const macaddr_t& mac, const void* packet,
     if (!egressEnabled(deviceId) || packet == nullptr || len <= 0) {
         return -1;
     }
-    if (egress.queuedBytes + size_t(len) > egress.capacity) {
-        return 0; // tail drop
-    }
-
     QueueEntry entry;
     const auto* bytes = static_cast<const uint8_t*>(packet);
     entry.packet.assign(bytes, bytes + len);
@@ -159,13 +174,29 @@ int egressEnqueue(int deviceId, const macaddr_t& mac, const void* packet,
     if (egress.wfq) {
         const uint32_t key = source.s_addr;
         FlowQueue& flow = egress.flows[key];
+        if (flow.queuedBytes + size_t(len) > egress.capacity) {
+            if (std::getenv("NETSTACK_EGRESS_LOG") != nullptr) {
+                static std::map<uint32_t, uint64_t> drops;
+                drops[key] += uint64_t(len);
+                WARN("egress drop flow=%u bytes=%llu\n", key,
+                     static_cast<unsigned long long>(drops[key]));
+            }
+            return 0; // per-flow tail drop
+        }
+        if (std::getenv("NETSTACK_EGRESS_LOG") != nullptr) {
+            logEnqueued(key, size_t(len), std::chrono::steady_clock().now());
+        }
         const auto weightIt = egress.weights.find(key);
         flow.weight = weightIt == egress.weights.end() ? 1 : weightIt->second;
+        flow.queuedBytes += size_t(len);
         flow.queue.push_back(std::move(entry));
         if (egress.current == egress.flows.end()) {
             egress.current = egress.flows.begin();
         }
     } else {
+        if (egress.queuedBytes + size_t(len) > egress.capacity) {
+            return 0; // shared tail drop
+        }
         egress.fifo.push_back(std::move(entry));
     }
     egress.queuedBytes += size_t(len);
@@ -182,68 +213,86 @@ void egressTick(TimePoint now) {
     egress.tokens = std::min(egress.tokens + egress.rate * elapsed,
                              egress.rate * 0.02 + 1500.0);
 
-    while (egress.queuedBytes > 0) {
-        QueueEntry* selected = nullptr;
-        uint32_t selectedFlow = 0;
-
-        if (egress.wfq) {
-            // Deficit round robin: each flow may send weight * quantum bytes
-            // per round. Empty flows reset their deficit.
-            bool found = false;
-            for (size_t attempt = 0; attempt < egress.flows.size(); ++attempt) {
-                if (egress.current == egress.flows.end()) {
-                    egress.current = egress.flows.begin();
-                }
-                FlowQueue& flow = egress.current->second;
-                if (flow.queue.empty()) {
-                    flow.deficit = 0;
-                    ++egress.current;
-                    continue;
-                }
-                const size_t length = flow.queue.front().packet.size();
-                if (flow.deficit < int64_t(length)) {
-                    flow.deficit += DRR_QUANTUM * flow.weight;
-                }
-                if (flow.deficit >= int64_t(length)) {
-                    selected = &flow.queue.front();
-                    selectedFlow = egress.current->first;
-                    found = true;
-                    break;
-                }
-                ++egress.current;
-            }
-            if (!found) {
+    if (!egress.wfq) {
+        while (!egress.fifo.empty()) {
+            QueueEntry& entry = egress.fifo.front();
+            const size_t length = entry.packet.size();
+            if (double(length) > egress.tokens) {
                 break;
             }
-        } else if (!egress.fifo.empty()) {
-            selected = &egress.fifo.front();
+            sendFrame(entry.packet.data(), int(length), ETH_TYPE_IPV4,
+                      entry.mac.data(), egress.deviceId);
+            egress.tokens -= double(length);
+            egress.queuedBytes -= std::min(egress.queuedBytes, length);
+            egress.fifo.pop_front();
         }
+        return;
+    }
 
-        if (selected == nullptr) {
-            break;
-        }
-        const size_t length = selected->packet.size();
-        if (double(length) > egress.tokens) {
-            break;
-        }
-
-        sendFrame(selected->packet.data(), int(length), ETH_TYPE_IPV4,
-                  selected->mac.data(), egress.deviceId);
-        egress.tokens -= double(length);
-        egress.queuedBytes -= std::min(egress.queuedBytes, length);
-        if (std::getenv("NETSTACK_EGRESS_LOG") != nullptr) {
-            logSent(selectedFlow, length, now);
-        }
-        if (egress.wfq) {
+    // Deficit round robin with a persistent round-robin position, so a
+    // flow that cannot send for lack of tokens does not block the others.
+    bool progress = true;
+    while (progress && egress.queuedBytes > 0) {
+        progress = false;
+        size_t attempts = 0;
+        while (attempts < egress.flows.size()) {
+            if (egress.flows.empty()) {
+                break;
+            }
+            if (egress.current == egress.flows.end()) {
+                egress.current = egress.flows.begin();
+            }
             FlowQueue& flow = egress.current->second;
-            flow.deficit -= int64_t(length);
-            flow.queue.pop_front();
+            ++attempts;
             if (flow.queue.empty()) {
                 flow.deficit = 0;
+                flow.queuedBytes = 0;
                 ++egress.current;
+                continue;
             }
-        } else {
-            egress.fifo.pop_front();
+            const size_t length = flow.queue.front().packet.size();
+            if (double(length) > egress.tokens) {
+                // Resume this flow after the bucket refills; advancing now
+                // would let the next flow take its quantum's tokens.
+                break;
+            }
+            if (flow.deficit < int64_t(length)) {
+                flow.deficit += DRR_QUANTUM * flow.weight;
+            }
+            while (!flow.queue.empty()) {
+                QueueEntry& entry = flow.queue.front();
+                const size_t packetLength = entry.packet.size();
+                if (flow.deficit < int64_t(packetLength) ||
+                    double(packetLength) > egress.tokens) {
+                    break;
+                }
+                const uint32_t key = egress.current->first;
+                sendFrame(entry.packet.data(), int(packetLength),
+                          ETH_TYPE_IPV4, entry.mac.data(), egress.deviceId);
+                egress.tokens -= double(packetLength);
+                egress.queuedBytes -= std::min(egress.queuedBytes, packetLength);
+                flow.deficit -= int64_t(packetLength);
+                flow.queuedBytes -= std::min(flow.queuedBytes, packetLength);
+                flow.queue.pop_front();
+                if (std::getenv("NETSTACK_EGRESS_LOG") != nullptr) {
+                    logSent(key, packetLength, now);
+                }
+                progress = true;
+            }
+            if (flow.queue.empty()) {
+                flow.deficit = 0;
+                flow.queuedBytes = 0;
+                ++egress.current;
+            } else if (flow.deficit <
+                       int64_t(flow.queue.front().packet.size())) {
+                ++egress.current;
+            } else {
+                // The flow still has quantum but the bucket is empty.
+                break;
+            }
+            if (egress.tokens < 1.0) {
+                break;
+            }
         }
     }
 }
