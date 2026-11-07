@@ -11,6 +11,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <map>
+#include <utility>
+#include <vector>
 
 extern "C" {
 ssize_t __real_read(int fildes, void* buf, size_t nbyte);
@@ -49,6 +51,31 @@ int allocFd(int conn) {
     return fd;
 }
 
+void closeStackSocket(int fd, int conn, bool drain) {
+    if (tcpState(conn) == TcpState::Closed) {
+        tcpRelease(conn);
+    } else {
+        // There is no background sender: give queued data a bounded chance
+        // to reach the peer before the socket state is torn down.
+        const auto deadline = std::chrono::steady_clock().now() +
+                              std::chrono::milliseconds(5000);
+        while (drain && tcpPendingBytes(conn) > 0 && tcpError(conn) == 0 &&
+               std::chrono::steady_clock().now() < deadline) {
+            netstackPump(10);
+        }
+        tcpClose(conn);
+    }
+    fdToConnection.erase(fd);
+}
+
+void closeAllStackSockets() {
+    std::vector<std::pair<int, int>> sockets(fdToConnection.begin(),
+                                             fdToConnection.end());
+    for (const auto& [fd, conn] : sockets) {
+        closeStackSocket(fd, conn, true);
+    }
+}
+
 bool ensureStack() {
     if (stackReady) {
         return true;
@@ -60,6 +87,9 @@ bool ensureStack() {
     tcpInit();
     setIPPacketReceiveCallback(tcpReceivePacket);
     stackReady = true;
+    // POSIX process termination closes every descriptor, so send pending
+    // FINs before the stack disappears with the process.
+    std::atexit(closeAllStackSockets);
     return true;
 }
 
@@ -269,20 +299,7 @@ int __wrap_close(int fildes) {
     if (conn < 0) {
         return __real_close(fildes);
     }
-    if (tcpState(conn) == TcpState::Closed) {
-        tcpRelease(conn);
-    } else {
-        // There is no background sender: give queued data a bounded chance
-        // to reach the peer before the socket state is torn down.
-        const auto deadline = std::chrono::steady_clock().now() +
-                              std::chrono::milliseconds(5000);
-        while (tcpPendingBytes(conn) > 0 && tcpError(conn) == 0 &&
-               std::chrono::steady_clock().now() < deadline) {
-            netstackPump(10);
-        }
-        tcpClose(conn);
-    }
-    fdToConnection.erase(fildes);
+    closeStackSocket(fildes, conn, true);
     return 0;
 }
 
