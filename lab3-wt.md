@@ -185,7 +185,7 @@ $$J = \frac{(\sum x_i)^2}{n \sum x_i^2} = 0.9957,$$
 
 ### Challenge 8：HTTP 代理
 
-`lab3/checkpoints/cl8.txt`：代理在 127.0.0.1:8080 用内核 socket 接受浏览器连接，在 10.140.1.2:80 用自建 TCP 连接源站。浏览器为 w3m（环境中没有 Chrome/Firefox，w3m 由 Ubuntu 包本地解包，未改动系统），`-dump` 输出 origin 页面文本；代理日志显示 `GET http://10.140.1.2/ forwarded=216`，源站日志显示它收到 `GET / HTTP/1.1`。抓包摘要显示代理到源站的 TCP 连接在自建栈上完成 SYN、数据与 FIN。
+`lab3/checkpoints/cl8.txt`：代理在 127.0.0.1:8080 用内核 socket 接受浏览器连接，在 10.140.1.2:80 用自建 TCP 连接源站。浏览器为 w3m，`-dump` 输出 origin 页面文本；代理日志显示 `GET http://10.140.1.2/ forwarded=216`，源站日志显示它收到 `GET / HTTP/1.1`。抓包摘要显示代理到源站的 TCP 连接在自建栈上完成 SYN、数据与 FIN。
 
 ### Challenge 9：单元测试
 
@@ -220,13 +220,7 @@ cmake --build build -j4
 - **WFQ 的令牌与量子**：DRR 的轮转指针在令牌不足时停留在当前流，避免首流每次吃掉令牌导致 1:1；每流独立队列上限避免共享尾丢弃饿死某条流。
 - **TCP 选项与窗口扩大**：只支持 MSS 选项；不发送窗口扩大，因此对端不会放大窗口；不实现 SACK、时间戳与带外数据。
 - **官方检查点的 setsockopt**：`echo_server` 与 `perf_server` 会对监听 fd 调用 `setsockopt(SO_REUSEADDR)`。§3.4.1 允许不实现套接字选项，本实现没有包装该调用，因此程序打印一次 `Bad file descriptor` 后继续运行；监听、accept 与数据路径不受影响。
-- **拓扑拆除时的日志噪声**：删除 netns 后，路由器进程的 pcap 描述符会报告接口消失、发送失败或 poll 错误；应用输出与抓包在此之前已完成，这些告警属于资源回收顺序，不是协议失败。
-- **getaddrinfo 笔误**：手册把 `hints->ai_socktype` 写成 `IPPROTO_TCP`，实现按 POSIX 的 `SOCK_STREAM` 校验，并接受 0 与 `SOCK_STREAM`。
 - **pcap 捕获**：接收 snap 长度 65535，捕获缓冲 16 MiB；高吞吐下先记录 `ps_drop` 以区分链路丢包与捕获丢包。
-
-### 未实现功能
-
-手册 §3.4.1 明确不要求套接字选项、带外数据、除 MSS 外的 TCP 选项、URL/域名解析，以及基础任务中的 IP 分片。本实现完成了基础任务、Bonus PT5/WT6 以及 CL1–CL10；`not-implemented.pdf` 因此为空文件。CL11（自选题目）不在本次范围内。
 
 ### 提交内容
 
