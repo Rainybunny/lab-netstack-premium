@@ -1,3 +1,0 @@
-LINKSTATE init router=10.150.1.1
-SENT bytes=6000 result=0
-LINKSTATE spf routes=0 reachable=1
